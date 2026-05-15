@@ -19,150 +19,106 @@
     <div class="bgm-title" id="bgm-title">재생 중인 곡이 없습니다</div>
   </div>
   <div class="bgm-bar-wrap"><div class="bgm-bar-fill" id="bgm-prog"></div></div>
-  <div class="bgm-vol">
-    🔊
-    <input type="range" min="0" max="100" value="70" id="bgm-vol-input" aria-label="볼륨" />
-  </div>
+  <div class="bgm-vol">🔊<input type="range" min="0" max="100" value="70" id="bgm-vol-input" aria-label="볼륨" /></div>
 </header>
 
-<!-- ── APP ── -->
 <main id="app"></main>
-
-<!-- ── BOTTOM NAV ── -->
-<nav class="nav" aria-label="페이지 메뉴">
-  <a href="#/"       class="nav-a" data-p="home">   ⬡ 홈</a>
-  <a href="#/notice" class="nav-a" data-p="notice">  📋 공지</a>
-  <a href="#/users"  class="nav-a" data-p="users">   👥 유저 목록</a>
-</nav>
-
-<!-- ── AUDIO (숨김) ── -->
 <audio id="bgm-audio" loop></audio>
 
 <script>
-/* ══════════════════════════════════════════════
-   DATA  —  나중에 Google Sheets API 로 교체 예정
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   DATA  —  이후 Google Sheets API 로 교체
+══════════════════════════════════════════ */
 const owner = {
   nick:   "닉네임",
   avatar: null,
-  tags:   ["CoC 7판", "SW2.5", "이런 느낌으로", "여러개 가능", "쉼표로 구분"],
-  bio:    "플레이어 소개 텍스트가 여기에 들어갑니다.\n너무 길지 않게 작성하는 것을 권장해요.\n취향이나 플레이 스타일 등을 자유롭게 적어 주세요.",
-  links:  [
-    { label: "성향표", url: "#" },
-    { label: "일정표", url: "#" },
-  ],
-  sns: [
-    { label: "Twitter / X", url: "#" },
-    { label: "Misskey",     url: "#" },
-    { label: "Discord",     url: "#" },
-  ]
+  tags:   ["CoC 7판", "SW2.5", "이런 느낌으로", "여러개 가능"],
+  bio:    "플레이어 소개 텍스트가 여기에 들어갑니다.\n너무 길지 않게 작성하는 것을 권장해요.\n취향이나 플레이 스타일을 자유롭게 적어 주세요.",
+  links:  [{ label:"성향표", url:"#" }, { label:"일정표", url:"#" }],
+  sns:    [{ label:"Twitter / X", url:"#" }, { label:"Misskey", url:"#" }, { label:"Discord", url:"#" }]
 };
 
-/*  icons 배열 길이로 레이아웃이 달라집니다.
-    - 1개  →  아이콘이 썸네일 위에 오버레이,  썸네일 풀사이즈
-    - 2~3개 →  오른쪽 세로 열에 아이콘 나열             */
+/*  icons: 1개면 썸네일 우상단 오버레이, 2~3개면 세로로 나열 */
 const pcs = [
-  { id:1,  roll:"CoC 7판", icons:["🎲"],            name:"아리아",  ruby:"アリア",  aff:"탐정 사무소",  tags:["성인","여성","탐정"],       bio:"오래된 도시의 뒷골목을 무대로 활동하는 사립탐정. 날카로운 직관으로 사건을 해결한다.",                   born:"19??.??.??", height:"163cm", img:null },
-  { id:2,  roll:"SW2.5",  icons:["⚔️","🗡️"],      name:"루카스",  ruby:"ルーカス", aff:"모험자 길드",  tags:["성인","남성","전사"],       bio:"북부 출신의 젊은 전사. 동료를 위해서라면 망설임 없이 방패가 된다.",                                   born:"22세",       height:"182cm", img:null },
-  { id:3,  roll:"CoC 7판", icons:["🎲","💊"],       name:"하나",    ruby:"ハナ",    aff:"대학교 의대",  tags:["성인","여성","의대생"],     bio:"의대 3학년생. 평범해 보이지만 알 수 없는 사건에 몇 번이고 휘말리는 운명을 지닌다.",                    born:"19??.4.7",   height:"157cm", img:null },
-  { id:4,  roll:"인세인",  icons:["🌀","🎭","⚡"], name:"세이버",  ruby:"セイバー", aff:"미상",         tags:["성별불명","비밀"],         bio:"어둠 속에서 나타나 사건을 해결하고 사라지는 수수께끼의 인물.",                                         born:"미상",       height:"미상",  img:null },
-  { id:5,  roll:"CoC 7판", icons:["🎲"],            name:"레이나",  ruby:"レイナ",  aff:"무직",         tags:["성인","여성","백수"],       bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",                                              born:"19??.9.15",  height:"168cm", img:null },
-  { id:6,  roll:"SW2.5",  icons:["⚔️","🛡️"],     name:"클레어",  ruby:"クレア",  aff:"왕국 기사단",  tags:["성인","여성","기사"],       bio:"왕국 최연소 기사 중 한 명. 정의감이 넘치고 직선적인 성격이다.",                                       born:"20세",       height:"170cm", img:null },
-  { id:7,  roll:"인세인",  icons:["🌀"],            name:"미래",    ruby:"ミライ",  aff:"고등학교",     tags:["미성년","여성","고등학생"], bio:"남다른 감수성을 지닌 고등학생. 다른 사람이 보지 못하는 것을 볼 수 있다.",                              born:"17세",       height:"154cm", img:null },
-  { id:8,  roll:"CoC 7판", icons:["🎲","📜"],      name:"노아",    ruby:"ノア",    aff:"해외 유학생",  tags:["성인","남성","유학생"],     bio:"해외에서 온 유학생. 한국어는 유창하지만 가끔 묘한 발언을 해서 주변을 당황하게 한다.",                    born:"19??.12.3",  height:"175cm", img:null },
+  { id:1,  roll:"CoC 7판", icons:["🎲"],           name:"아리아",  ruby:"アリア",  aff:"탐정 사무소", tags:["성인","여성","탐정"],       bio:"오래된 도시의 뒷골목에서 활동하는 사립탐정. 날카로운 직관으로 사건을 해결한다.",       born:"19??.??.??", height:"163cm", img:null },
+  { id:2,  roll:"SW2.5",  icons:["⚔️","🗡️"],     name:"루카스",  ruby:"ルーカス", aff:"모험자 길드", tags:["성인","남성","전사"],       bio:"북부 출신의 젊은 전사. 동료를 위해서라면 망설임 없이 방패가 된다.",               born:"22세",       height:"182cm", img:null },
+  { id:3,  roll:"CoC 7판", icons:["🎲","💊"],      name:"하나",    ruby:"ハナ",    aff:"대학교 의대", tags:["성인","여성","의대생"],     bio:"의대 3학년생. 평범해 보이지만 알 수 없는 사건에 몇 번이고 휘말리는 운명을 지닌다.", born:"19??.4.7",   height:"157cm", img:null },
+  { id:4,  roll:"인세인",  icons:["🌀","🎭","⚡"],name:"세이버",  ruby:"セイバー", aff:"미상",        tags:["성별불명","비밀"],         bio:"어둠 속에서 나타나 사건을 해결하고 사라지는 수수께끼의 인물.",                       born:"미상",       height:"미상",  img:null },
+  { id:5,  roll:"CoC 7판", icons:["🎲"],           name:"레이나",  ruby:"レイナ",  aff:"무직",        tags:["성인","여성","백수"],       bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",                           born:"19??.9.15",  height:"168cm", img:null },
+  { id:6,  roll:"SW2.5",  icons:["⚔️","🛡️"],    name:"클레어",  ruby:"クレア",  aff:"왕국 기사단", tags:["성인","여성","기사"],       bio:"왕국 최연소 기사 중 한 명. 정의감이 넘치고 직선적인 성격이다.",                     born:"20세",       height:"170cm", img:null },
+  { id:7,  roll:"인세인",  icons:["🌀"],           name:"미래",    ruby:"ミライ",  aff:"고등학교",    tags:["미성년","여성","고등학생"], bio:"남다른 감수성을 지닌 고등학생. 다른 사람이 보지 못하는 것을 볼 수 있다.",            born:"17세",       height:"154cm", img:null },
+  { id:8,  roll:"CoC 7판", icons:["🎲","📜"],     name:"노아",    ruby:"ノア",    aff:"해외 유학생", tags:["성인","남성","유학생"],     bio:"해외에서 온 유학생. 한국어는 유창하지만 가끔 묘한 발언을 해서 주변을 당황하게 한다.", born:"19??.12.3",  height:"175cm", img:null },
 ];
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    HELPERS
-══════════════════════════════════════════════ */
-function linkIcon(){
-  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/>
-    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>
-  </svg>`;
+══════════════════════════════════════════ */
+function linkSvg(){
+  return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
 }
 
-function tagHtml(t, cls=''){
-  return `<span class="tag ${cls}">${t}</span>`;
+/* 룰별 tag 색상 클래스 */
+function rollClass(roll){
+  if(roll.includes('CoC'))  return 'coc';
+  if(roll.includes('SW'))   return 'sw';
+  if(roll.includes('인세인')) return 'ins';
+  return 'gold';
 }
 
-/* ══════════════════════════════════════════════
-   CARD BUILDER
-══════════════════════════════════════════════ */
+function tagHtml(t, cls=''){ return `<span class="tag ${cls}">${t}</span>`; }
+
+function rollTagHtml(roll){ return tagHtml(roll, rollClass(roll)); }
+
+/* ══════════════════════════════════════════
+   PC CARD
+══════════════════════════════════════════ */
 function pcCardHtml(pc){
-  const multi = pc.icons.length > 1;
-  const icons = pc.icons.slice(0, 3);
-
-  const iconCol = multi
-    ? `<div class="pc-icons" aria-hidden="true">
-        ${icons.map(ic=>`<span class="pc-icon">${ic}</span>`).join('')}
-       </div>`
-    : '';
-
-  const iconOv = !multi
-    ? `<span class="pc-icon-ov" aria-hidden="true">${icons[0]}</span>`
-    : '';
-
-  const thumbCls = multi ? 'pc-thumb' : 'pc-thumb pc-thumb--full';
-
+  const icons = pc.icons.slice(0,3);
   return `
-    <div class="pc-card" onclick="go('/pc/${pc.id}')"
-         role="button" tabindex="0" aria-label="${pc.name} 프로필 보기">
-      <div class="pc-body">
-        <div class="${thumbCls}">
-          ${pc.img
-            ? `<img src="${pc.img}" alt="${pc.name} 일러스트">`
-            : `<span class="thumb-ph" aria-hidden="true">🎭</span>`}
-          ${iconOv}
-        </div>
-        ${iconCol}
+  <div class="pc-card" onclick="go('/pc/${pc.id}')"
+       role="button" tabindex="0" aria-label="${pc.name} 프로필 보기">
+    <div class="pc-thumb">
+      ${pc.img ? `<img src="${pc.img}" alt="${pc.name} 일러스트">` : `<span class="thumb-ph" aria-hidden="true">🎭</span>`}
+      <div class="pc-icons-ov" aria-hidden="true">
+        ${icons.map(ic=>`<span class="pc-icon-txt">${ic}</span>`).join('')}
       </div>
-      <div class="pc-bot">
-        <span class="ruby">${pc.ruby}</span>
-        <div class="pc-name">${pc.name}</div>
-        <div class="aff">· ${pc.aff} ·</div>
-      </div>
-    </div>`;
+    </div>
+    <div class="pc-bot">
+      <span class="ruby">${pc.ruby}</span>
+      <div class="pc-name">${pc.name}</div>
+      <div class="aff">· ${pc.aff} ·</div>
+    </div>
+  </div>`;
 }
 
 function renderCards(list){
-  if(!list.length){
-    return `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-dim);font-size:13px;">
-              검색 결과가 없습니다
-            </div>`;
-  }
-  return list.map(pcCardHtml).join('');
+  return list.length
+    ? list.map(pcCardHtml).join('')
+    : `<div style="grid-column:1/-1;padding:40px;text-align:center;color:var(--text-dim);font-size:13px;">검색 결과가 없습니다</div>`;
 }
 
-/* ══════════════════════════════════════════════
-   PAGES
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   HOME PAGE
+══════════════════════════════════════════ */
 function pageHome(){
   const bioHtml = owner.bio.replace(/\n/g,'<br>');
   const rolls   = [...new Set(pcs.map(p=>p.roll))];
-
   return `
   <section class="owner">
     <div class="owner-l">
-      <div class="avatar">
-        ${owner.avatar ? `<img src="${owner.avatar}" alt="프로필 사진">` : '🎭'}
-      </div>
+      <div class="avatar">${owner.avatar ? `<img src="${owner.avatar}" alt="프사">` : '🎭'}</div>
       <div class="nick">${owner.nick}</div>
       <div class="owner-links">
-        ${owner.links.map(l=>`
-          <a href="${l.url}" class="olink">${linkIcon()} ${l.label}</a>
-        `).join('')}
+        ${owner.links.map(l=>`<a href="${l.url}" class="olink">${linkSvg()} ${l.label}</a>`).join('')}
       </div>
     </div>
     <div class="owner-r">
       <div class="row-tags">
-        ${owner.tags.map((t,i)=>tagHtml(t, i<2?'gold':'blue')).join('')}
+        ${owner.tags.map((t,i)=>tagHtml(t,i<2?'gold':'blue')).join('')}
       </div>
       <div class="bio">${bioHtml}</div>
       <div class="row-sns">
-        ${owner.sns.map(s=>`
-          <a href="${s.url}" class="sns-a">${linkIcon()} ${s.label}</a>
-        `).join('')}
+        ${owner.sns.map(s=>`<a href="${s.url}" class="sns-a">${linkSvg()} ${s.label}</a>`).join('')}
       </div>
     </div>
   </section>
@@ -170,7 +126,6 @@ function pageHome(){
   <section class="pcs">
     <div class="pcs-head">PC 리스트</div>
     <div class="ctrl-area">
-
       <div class="ctrl-row">
         <span class="ctrl-lbl">룰</span>
         <div class="chip-group" id="chip-rule">
@@ -178,7 +133,6 @@ function pageHome(){
           ${rolls.map(r=>`<button class="chip" data-val="${r}">${r}</button>`).join('')}
         </div>
       </div>
-
       <div class="ctrl-row">
         <span class="ctrl-lbl">정렬</span>
         <div class="chip-group" id="chip-sort">
@@ -188,7 +142,6 @@ function pageHome(){
           <button class="chip" data-val="roll">룰이름순</button>
         </div>
       </div>
-
       <div class="ctrl-row">
         <span class="ctrl-lbl">필터</span>
         <div class="chip-group" id="chip-filter">
@@ -197,96 +150,299 @@ function pageHome(){
           <button class="chip f" data-val="스탠딩">스탠딩 유무</button>
         </div>
       </div>
-
       <div class="ctrl-row">
         <span class="ctrl-lbl">검색</span>
         <div class="search-w">
-          <input type="text" id="pc-search"
-            placeholder="이름, 소속, 룰 검색…" autocomplete="off" />
+          <input type="text" id="pc-search" placeholder="이름, 소속, 룰 검색…" autocomplete="off" />
           <span class="search-hint">캐릭터 정보 범위 내 검색</span>
         </div>
       </div>
-
     </div>
-
     <div class="pc-grid-wrap">
-      <div class="pc-grid" id="pc-grid">
-        ${renderCards(pcs)}
-      </div>
+      <div class="pc-grid" id="pc-grid">${renderCards(pcs)}</div>
     </div>
   </section>`;
 }
 
-function pageNotice(){
-  return `<div class="ph-page">
-    <div class="ph-title">공 지 사 항</div>
-    <p class="ph-sub">공지 페이지는 준비 중입니다.</p>
-  </div>`;
-}
-
-function pageUsers(){
-  return `<div class="ph-page">
-    <div class="ph-title">유 저 목 록</div>
-    <p class="ph-sub">유저 목록 페이지는 준비 중입니다.</p>
-  </div>`;
-}
-
+/* ══════════════════════════════════════════
+   DETAIL PAGE — HERO + TABS
+══════════════════════════════════════════ */
 function pagePc(id){
   const pc = pcs.find(p=>p.id===+id);
-  if(!pc) return `<div class="ph-page">
-    <div class="ph-title">404</div>
-    <p class="ph-sub">캐릭터를 찾을 수 없습니다.</p>
-    <br><a href="#/" style="color:var(--gold);font-size:13px;">← 돌아가기</a>
-  </div>`;
+  if(!pc) return `<div class="ph-page"><div class="ph-title">404</div><p class="ph-sub">캐릭터를 찾을 수 없습니다.</p><br><a href="#/" style="color:var(--gold);font-size:13px;">← 돌아가기</a></div>`;
 
+  const rc = rollClass(pc.roll);
   return `
-  <a href="#/" class="detail-back">← PC 목록으로</a>
-  <div class="detail-wrap">
-    <div class="detail-img">
-      ${pc.img
-        ? `<img src="${pc.img}" alt="${pc.name} 일러스트">`
-        : `<span class="detail-ph" aria-hidden="true">🎭</span>`}
+  <a href="#/" class="detail-back">← PC 목록</a>
+
+  <!-- Hero -->
+  <div class="d-hero">
+    <div class="d-hero-img">
+      ${pc.img ? `<img src="${pc.img}" alt="${pc.name} 일러스트">` : `<span class="d-hero-ph-icon" aria-hidden="true">🎭</span>`}
     </div>
-    <div class="detail-info">
-      <div class="detail-name-area">
-        <div class="detail-ruby">${pc.ruby}</div>
-        <div class="detail-name">${pc.name}</div>
-        <div class="detail-aff">${pc.aff}</div>
-        <div class="detail-tags">
-          ${tagHtml(pc.roll,'gold')}
-          ${pc.tags.map(t=>tagHtml(t)).join('')}
-        </div>
+    <div class="d-hero-ov">
+      <div class="d-ruby">${pc.ruby}</div>
+      <div class="d-name">${pc.name}</div>
+      <div class="d-hero-tags">
+        ${rollTagHtml(pc.roll)}
+        ${pc.tags.slice(0,4).map(t=>tagHtml(t)).join('')}
       </div>
-      <div class="info-row"><span class="info-key">소개</span>    <span class="info-val">${pc.bio}</span></div>
-      <div class="info-row"><span class="info-key">생년월일</span><span class="info-val">${pc.born}</span></div>
-      <div class="info-row"><span class="info-key">신장</span>    <span class="info-val">${pc.height}</span></div>
-      <div class="info-row"><span class="info-key">소속</span>    <span class="info-val">${pc.aff}</span></div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="d-tabs">
+    <div class="tab-nav">
+      <button class="tab-btn on" data-tab="info">정보</button>
+      <button class="tab-btn" data-tab="images">이미지</button>
+      <button class="tab-btn" data-tab="profile">프로필</button>
+      <button class="tab-btn" data-tab="sheet">시트</button>
+      <button class="tab-btn" data-tab="log">플레이 로그</button>
+    </div>
+    <div class="tab-body" id="tab-body">${tabContent('info', pc)}</div>
+  </div>`;
+}
+
+/* ══════════════════════════════════════════
+   TAB CONTENT
+══════════════════════════════════════════ */
+function tabContent(tab, pc){
+  switch(tab){
+    case 'info':    return tabInfo(pc);
+    case 'images':  return tabImages(pc);
+    case 'profile': return tabProfile(pc);
+    case 'sheet':   return tabSheet(pc);
+    case 'log':     return tabLog(pc);
+    default:        return tabInfo(pc);
+  }
+}
+
+function tabInfo(pc){
+  return `
+  <div class="info-row"><span class="info-key">이름</span>    <span class="info-val">${pc.name}（${pc.ruby}）</span></div>
+  <div class="info-row"><span class="info-key">소속</span>    <span class="info-val">${pc.aff}</span></div>
+  <div class="info-row"><span class="info-key">생년월일</span><span class="info-val">${pc.born}</span></div>
+  <div class="info-row"><span class="info-key">신장</span>    <span class="info-val">${pc.height}</span></div>
+  <div class="info-row"><span class="info-key">소개</span>    <span class="info-val">${pc.bio}</span></div>
+  <div class="info-row"><span class="info-key">태그</span>    <span class="info-val" style="display:flex;gap:5px;flex-wrap:wrap;">${pc.tags.map(t=>tagHtml(t)).join('')}</span></div>`;
+}
+
+function tabImages(pc){
+  if(pc.img) return `<div class="img-grid"><div class="img-grid-item"><img src="${pc.img}" alt=""></div></div>`;
+  return `<div class="img-grid">
+    ${[...Array(6)].map(()=>`<div class="img-grid-item">🎭</div>`).join('')}
+  </div>
+  <div class="tab-ph" style="padding-top:14px;">이미지가 없습니다</div>`;
+}
+
+function tabProfile(pc){
+  return `<div class="tab-ph">프로필 내용이 없습니다.<br><span style="font-size:11px;color:var(--text-dim);">구글 시트에서 불러올 예정</span></div>`;
+}
+
+/* ── 시트: 룰별 분기 ── */
+function tabSheet(pc){
+  switch(pc.roll){
+    case 'CoC 7판': return sheetCoc(pc);
+    case 'SW2.5':   return sheetSw(pc);
+    case '인세인':  return sheetInsane(pc);
+    default: return `<div class="tab-ph">지원하지 않는 룰입니다.<br><span style="font-size:11px;color:var(--text-dim);">${pc.roll}</span></div>`;
+  }
+}
+
+/* ── CoC 7판 시트 ── */
+function sheetCoc(pc){
+  const stats = [
+    { name:'STR', val:50 }, { name:'CON', val:60 },
+    { name:'SIZ', val:65 }, { name:'DEX', val:70 },
+    { name:'APP', val:60 }, { name:'INT', val:75 },
+    { name:'POW', val:55 }, { name:'EDU', val:80 },
+  ];
+  const derived = [
+    { lbl:'HP', val:12 }, { lbl:'MP', val:11 },
+    { lbl:'SAN', val:55 }, { lbl:'LCK', val:60 },
+    { lbl:'DB', val:'+0' }, { lbl:'MOV', val:8 },
+  ];
+  const skills = [
+    { name:'도서관',   val:60 }, { name:'심리학', val:50 },
+    { name:'법률',     val:40 }, { name:'설득',   val:35 },
+    { name:'회피',     val:42 }, { name:'은닉',   val:30 },
+    { name:'응급치료', val:45 }, { name:'추적',   val:25 },
+  ];
+  return `<div class="sheet-coc">
+    <div class="sheet-note">※ 구글 시트 연동 후 자동으로 채워집니다 (현재 샘플)</div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">능 력 치</div>
+      <div class="coc-stats">
+        ${stats.map(s=>`
+          <div class="coc-stat">
+            <div class="cs-name">${s.name}</div>
+            <div class="cs-val">${s.val}</div>
+            <div class="cs-sub">${Math.floor(s.val/2)} / ${Math.floor(s.val/5)}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">파 생 스 탯</div>
+      <div class="coc-derived">
+        ${derived.map(d=>`
+          <div class="cd-item">
+            <span class="cd-lbl">${d.lbl}</span>
+            <span class="cd-val">${d.val}</span>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">기 술</div>
+      <div class="coc-skills">
+        ${skills.map(s=>`
+          <div class="coc-skill">
+            <span class="csk-name">${s.name}</span>
+            <span class="csk-bar"><span class="csk-fill" style="width:${s.val}%"></span></span>
+            <span class="csk-val">${s.val}</span>
+          </div>`).join('')}
+      </div>
     </div>
   </div>`;
 }
 
-/* ══════════════════════════════════════════════
+/* ── SW 2.5 시트 ── */
+function sheetSw(pc){
+  const stats   = [{ name:'STR',val:12 },{ name:'DEX',val:11 },{ name:'POW',val:9 },{ name:'INT',val:10 }];
+  const details = [
+    { lbl:'클래스', val:'파이터' }, { lbl:'레벨', val:'3' },
+    { lbl:'종족',  val:'인간'   }, { lbl:'연령', val:'청년' },
+    { lbl:'HP',    val:'36'     }, { lbl:'MP',   val:'9'   },
+  ];
+  const abils = ['전사의 투지','연속 공격','방어 태세','일격 필살'];
+  const magic = [];
+  return `<div class="sheet-sw">
+    <div class="sheet-note">※ 구글 시트 연동 후 자동으로 채워집니다 (현재 샘플)</div>
+
+    <div class="sw-header">
+      <span class="sw-class">파이터 Lv.3</span>
+      <span class="sw-race">인간 · 청년</span>
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">능 력 치</div>
+      <div class="sw-stats">
+        ${stats.map(s=>`
+          <div class="sw-stat">
+            <div class="ss-name">${s.name}</div>
+            <div class="ss-val">${s.val}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">기 본 정 보</div>
+      ${details.map(d=>`
+        <div class="sw-row">
+          <span class="sw-rlbl">${d.lbl}</span>
+          <span class="sw-rval">${d.val}</span>
+        </div>`).join('')}
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">전 투 특 기</div>
+      <div class="sw-abils">
+        ${abils.map(a=>`<span class="sw-abil">${a}</span>`).join('')}
+      </div>
+    </div>
+
+    ${magic.length ? `<div class="sheet-block"><div class="sheet-ttl">마 법</div>...</div>` : ''}
+  </div>`;
+}
+
+/* ── 인세인 시트 ── */
+function sheetInsane(pc){
+  const stats = [
+    { name:'무력',val:4 },{ name:'기민',val:5 },{ name:'집중',val:3 },
+    { name:'감지',val:4 },{ name:'기술',val:6 },{ name:'매력',val:5 },
+  ];
+  const fears    = ['어둠','밀실','죽음'];
+  const memories = [
+    '소중한 사람을 잃은 기억',
+    '이해할 수 없는 것을 목격한 날',
+  ];
+  const abils = ['직감','은신','간파'];
+  return `<div class="sheet-insane">
+    <div class="sheet-note">※ 구글 시트 연동 후 자동으로 채워집니다 (현재 샘플)</div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">능 력 치</div>
+      <div class="ins-stats">
+        ${stats.map(s=>`
+          <div class="ins-stat">
+            <div class="is-name">${s.name}</div>
+            <div class="is-val">${s.val}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">공 포</div>
+      <div class="ins-list">
+        ${fears.map(f=>`<span class="ins-fear">${f}</span>`).join('')}
+      </div>
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">기 억</div>
+      ${memories.map(m=>`
+        <div class="ins-mem-item">
+          <div class="ins-mem-label">기억</div>
+          <div>${m}</div>
+        </div>`).join('')}
+    </div>
+
+    <div class="sheet-block">
+      <div class="sheet-ttl">특 기</div>
+      <div class="ins-list">
+        ${abils.map(a=>`<span class="ins-abil">${a}</span>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function tabLog(pc){
+  const dummy = [
+    { date:'20??.??.??', title:'세션 제목 — 플레이 로그가 여기에 표시됩니다.' },
+    { date:'20??.??.??', title:'세션 제목 — 구글 시트에서 불러올 예정.' },
+  ];
+  return dummy.map(l=>`
+    <div class="log-item">
+      <div class="log-meta">${l.date}</div>
+      <div class="log-title">${l.title}</div>
+    </div>`).join('') + `<div class="tab-ph" style="padding-top:14px;">플레이 로그가 없습니다</div>`;
+}
+
+/* ══════════════════════════════════════════
+   PLACEHOLDER PAGES
+══════════════════════════════════════════ */
+function pageNotice(){
+  return `<div class="ph-page"><div class="ph-title">공 지 사 항</div><p class="ph-sub">준비 중입니다.</p></div>`;
+}
+function pageUsers(){
+  return `<div class="ph-page"><div class="ph-title">유 저 목 록</div><p class="ph-sub">준비 중입니다.</p></div>`;
+}
+
+/* ══════════════════════════════════════════
    STATE & FILTER
-══════════════════════════════════════════════ */
-const state = {
-  rules:   new Set(),   /* 빈 Set = 전체 */
-  sort:    'id-asc',
-  filters: new Set(),
-  q:       ''
-};
+══════════════════════════════════════════ */
+const state = { rules:new Set(), sort:'id-asc', filters:new Set(), q:'' };
 
 function applyFilters(){
   let list = [...pcs];
-  if(state.rules.size > 0)
-    list = list.filter(p => state.rules.has(p.roll));
+  if(state.rules.size > 0) list = list.filter(p=>state.rules.has(p.roll));
   if(state.q){
     const q = state.q.toLowerCase();
-    list = list.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.aff.toLowerCase().includes(q)  ||
-      p.roll.toLowerCase().includes(q) ||
-      p.ruby.toLowerCase().includes(q)
-    );
+    list = list.filter(p=>
+      p.name.toLowerCase().includes(q) || p.aff.toLowerCase().includes(q) ||
+      p.roll.toLowerCase().includes(q) || p.ruby.toLowerCase().includes(q));
   }
   if(state.sort==='id-asc')  list.sort((a,b)=>a.id-b.id);
   if(state.sort==='id-desc') list.sort((a,b)=>b.id-a.id);
@@ -295,126 +451,97 @@ function applyFilters(){
   return list;
 }
 
-function refreshGrid(){
-  const grid = document.getElementById('pc-grid');
-  if(grid) grid.innerHTML = renderCards(applyFilters());
-}
+function refreshGrid(){ const g=document.getElementById('pc-grid'); if(g) g.innerHTML=renderCards(applyFilters()); }
 
-/* ══════════════════════════════════════════════
-   HOME EVENTS
-══════════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   EVENT BINDINGS
+══════════════════════════════════════════ */
 function bindHomeEvents(){
-
-  /* 룰 — 복수 선택 ("전체" 선택 시 나머지 해제) */
+  /* 룰 복수 선택 */
   document.querySelectorAll('#chip-rule .chip').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const val    = btn.dataset.val;
-      const allBtn = document.querySelector('#chip-rule .chip[data-val="전체"]');
-
-      if(val === '전체'){
+    btn.addEventListener('click',()=>{
+      const val=btn.dataset.val, all=document.querySelector('#chip-rule .chip[data-val="전체"]');
+      if(val==='전체'){
         state.rules.clear();
         document.querySelectorAll('#chip-rule .chip').forEach(b=>b.classList.remove('on'));
         btn.classList.add('on');
       } else {
-        allBtn?.classList.remove('on');
+        all?.classList.remove('on');
         btn.classList.toggle('on');
-        if(btn.classList.contains('on')) state.rules.add(val);
-        else                             state.rules.delete(val);
-        if(state.rules.size === 0) allBtn?.classList.add('on');
+        btn.classList.contains('on') ? state.rules.add(val) : state.rules.delete(val);
+        if(state.rules.size===0) all?.classList.add('on');
       }
       refreshGrid();
     });
   });
-
-  /* 정렬 — 단일 선택 */
+  /* 정렬 단일 선택 */
   document.querySelectorAll('#chip-sort .chip').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
+    btn.addEventListener('click',()=>{
       document.querySelectorAll('#chip-sort .chip').forEach(b=>b.classList.remove('on'));
-      btn.classList.add('on');
-      state.sort = btn.dataset.val;
-      refreshGrid();
+      btn.classList.add('on'); state.sort=btn.dataset.val; refreshGrid();
     });
   });
-
-  /* 필터 — 복수 선택 */
+  /* 필터 복수 선택 */
   document.querySelectorAll('#chip-filter .chip').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
+    btn.addEventListener('click',()=>{
       btn.classList.toggle('on');
-      if(btn.classList.contains('on')) state.filters.add(btn.dataset.val);
-      else                             state.filters.delete(btn.dataset.val);
+      btn.classList.contains('on') ? state.filters.add(btn.dataset.val) : state.filters.delete(btn.dataset.val);
       refreshGrid();
     });
   });
-
   /* 검색 */
-  const si = document.getElementById('pc-search');
-  if(si){
-    si.value = state.q;
-    si.addEventListener('input', e=>{ state.q=e.target.value.trim(); refreshGrid(); });
-  }
+  const si=document.getElementById('pc-search');
+  if(si){ si.value=state.q; si.addEventListener('input',e=>{ state.q=e.target.value.trim(); refreshGrid(); }); }
+  /* 카드 키보드 */
+  document.querySelectorAll('.pc-card').forEach(c=>c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') c.click(); }));
+}
 
-  /* 카드 키보드 접근성 */
-  document.querySelectorAll('.pc-card').forEach(card=>{
-    card.addEventListener('keydown', e=>{
-      if(e.key==='Enter'||e.key===' ') card.click();
+function bindPcEvents(id){
+  const pc=pcs.find(p=>p.id===+id); if(!pc) return;
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
+      btn.classList.add('on');
+      document.getElementById('tab-body').innerHTML = tabContent(btn.dataset.tab, pc);
     });
   });
 }
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    ROUTER
-══════════════════════════════════════════════ */
-function go(path){ location.hash = '#' + path; }
+══════════════════════════════════════════ */
+function go(path){ location.hash='#'+path; }
 
 function render(){
-  const hash = location.hash.replace('#','') || '/';
-  const app  = document.getElementById('app');
-
-  document.querySelectorAll('.nav-a').forEach(a=>{
-    const p = a.dataset.p;
-    a.classList.toggle('on',
-      (hash==='/'                  && p==='home')   ||
-      (hash.startsWith('/notice') && p==='notice') ||
-      (hash.startsWith('/users')  && p==='users')
-    );
-  });
-
-  const pcMatch = hash.match(/^\/pc\/(\d+)$/);
-  if(pcMatch){ app.innerHTML = pagePc(pcMatch[1]); return; }
-
-  const pages = { '/':pageHome, '/notice':pageNotice, '/users':pageUsers };
-  app.innerHTML = (pages[hash] || pageHome)();
+  const hash=location.hash.replace('#','')||'/';
+  const app=document.getElementById('app');
+  const pcMatch=hash.match(/^\/pc\/(\d+)$/);
+  if(pcMatch){ app.innerHTML=pagePc(pcMatch[1]); bindPcEvents(pcMatch[1]); return; }
+  const pages={'/' :pageHome,'/notice':pageNotice,'/users':pageUsers};
+  app.innerHTML=(pages[hash]||pageHome)();
   if(hash==='/') bindHomeEvents();
 }
 
-window.addEventListener('hashchange', render);
-window.addEventListener('load', render);
+window.addEventListener('hashchange',render);
+window.addEventListener('load',render);
 
-/* ══════════════════════════════════════════════
+/* ══════════════════════════════════════════
    BGM
-══════════════════════════════════════════════ */
-const audio   = document.getElementById('bgm-audio');
-const playBtn = document.getElementById('bgm-play');
-const prog    = document.getElementById('bgm-prog');
-let playing   = false;
+══════════════════════════════════════════ */
+const audio=document.getElementById('bgm-audio');
+const playBtn=document.getElementById('bgm-play');
+const prog=document.getElementById('bgm-prog');
+let playing=false;
 
-playBtn.addEventListener('click', ()=>{
-  if(!audio.src || audio.src === window.location.href) return;
+playBtn.addEventListener('click',()=>{
+  if(!audio.src||audio.src===window.location.href) return;
   if(playing){ audio.pause(); playBtn.innerHTML='&#9654;'; }
   else        { audio.play().catch(()=>{}); playBtn.innerHTML='&#9646;&#9646;'; }
-  playing = !playing;
+  playing=!playing;
 });
-
-document.getElementById('bgm-vol-input').addEventListener('input', e=>{
-  audio.volume = e.target.value / 100;
-});
-
-audio.addEventListener('timeupdate', ()=>{
-  if(audio.duration)
-    prog.style.width = (audio.currentTime / audio.duration * 100) + '%';
-});
-
-audio.addEventListener('ended', ()=>{ playing=false; playBtn.innerHTML='&#9654;'; });
+document.getElementById('bgm-vol-input').addEventListener('input',e=>{ audio.volume=e.target.value/100; });
+audio.addEventListener('timeupdate',()=>{ if(audio.duration) prog.style.width=(audio.currentTime/audio.duration*100)+'%'; });
+audio.addEventListener('ended',()=>{ playing=false; playBtn.innerHTML='&#9654;'; });
 </script>
 </body>
 </html>
