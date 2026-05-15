@@ -246,7 +246,7 @@ button { font-family: var(--sans); cursor: pointer; }
 /* ════════════════════════════════════════════════
    PC CARD GRID
 ════════════════════════════════════════════════ */
-.pc-grid-wrap { padding: var(--card-pad); }
+.pc-grid-wrap { padding: var(--card-pad); margin-top: 12px; }
 .pc-grid {
   display: grid;
   grid-template-columns: repeat(var(--card-cols), 1fr);
@@ -286,11 +286,11 @@ button { font-family: var(--sans); cursor: pointer; }
   top: 8px; right: 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
   pointer-events: none;
 }
 .pc-icon-txt {
-  font-size: 45px;
+  font-size: 30px;
   line-height: 1;
   filter: drop-shadow(0 2px 6px rgba(0,0,0,1)) drop-shadow(0 0 4px rgba(0,0,0,.9));
 }
