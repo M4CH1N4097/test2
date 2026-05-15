@@ -246,7 +246,7 @@ button { font-family: var(--sans); cursor: pointer; }
 /* ════════════════════════════════════════════════
    PC CARD GRID
 ════════════════════════════════════════════════ */
-.pc-grid-wrap { padding: var(--card-pad); margin-top: 12px; }
+.pc-grid-wrap { padding: 12px 0 0; }
 .pc-grid {
   display: grid;
   grid-template-columns: repeat(var(--card-cols), 1fr);
@@ -279,6 +279,18 @@ button { font-family: var(--sans); cursor: pointer; }
 }
 .pc-thumb img { width:100%; height:100%; object-fit:cover; object-position:top; }
 .thumb-ph     { font-size:42px; opacity:.13; }
+
+/* ── 카드 좌상단 룰 이름 ── */
+.pc-roll-lbl {
+  position: absolute;
+  top: 7px; left: 8px;
+  font-size: 10px;
+  color: rgba(255,255,255,.55);
+  letter-spacing: .3px;
+  line-height: 1;
+  pointer-events: none;
+  filter: drop-shadow(0 1px 3px rgba(0,0,0,1));
+}
 
 /* ── 아이콘: 썸네일 위 오버레이 (배경 없이 이모지만) ── */
 .pc-icons-ov {
@@ -323,7 +335,7 @@ button { font-family: var(--sans); cursor: pointer; }
   position: relative;
   width: 100%; height: 280px;
   border: 1px solid var(--border);
-  border-radius: 8px 8px 0 0;
+  border-radius: 8px;
   overflow: hidden;
 }
 .d-hero-img {
@@ -351,9 +363,9 @@ button { font-family: var(--sans); cursor: pointer; }
 ════════════════════════════════════════════════ */
 .d-tabs {
   border: 1px solid var(--border);
-  border-top: none;
-  border-radius: 0 0 8px 8px;
+  border-radius: 8px;
   background: var(--bg-card);
+  margin-top: 12px;
   margin-bottom: 16px;
 }
 .tab-nav {

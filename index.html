@@ -79,6 +79,7 @@ function pcCardHtml(pc){
        role="button" tabindex="0" aria-label="${pc.name} 프로필 보기">
     <div class="pc-thumb">
       ${pc.img ? `<img src="${pc.img}" alt="${pc.name} 일러스트">` : `<span class="thumb-ph" aria-hidden="true">🎭</span>`}
+      <span class="pc-roll-lbl" aria-hidden="true">${pc.roll}</span>
       <div class="pc-icons-ov" aria-hidden="true">
         ${icons.map(ic=>`<span class="pc-icon-txt">${ic}</span>`).join('')}
       </div>
