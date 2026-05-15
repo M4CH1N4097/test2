@@ -193,13 +193,11 @@ function pagePc(id){
   <!-- Tabs -->
   <div class="d-tabs">
     <div class="tab-nav">
-      <button class="tab-btn on" data-tab="info">정보</button>
-      <button class="tab-btn" data-tab="images">이미지</button>
-      <button class="tab-btn" data-tab="profile">프로필</button>
+      <button class="tab-btn on" data-tab="profile">프로필</button>
       <button class="tab-btn" data-tab="sheet">시트</button>
       <button class="tab-btn" data-tab="log">플레이 로그</button>
     </div>
-    <div class="tab-body" id="tab-body">${tabContent('info', pc)}</div>
+    <div class="tab-body" id="tab-body">${tabContent('profile', pc)}</div>
   </div>`;
 }
 
@@ -208,31 +206,11 @@ function pagePc(id){
 ══════════════════════════════════════════ */
 function tabContent(tab, pc){
   switch(tab){
-    case 'info':    return tabInfo(pc);
-    case 'images':  return tabImages(pc);
     case 'profile': return tabProfile(pc);
     case 'sheet':   return tabSheet(pc);
     case 'log':     return tabLog(pc);
-    default:        return tabInfo(pc);
+    default:        return tabProfile(pc);
   }
-}
-
-function tabInfo(pc){
-  return `
-  <div class="info-row"><span class="info-key">이름</span>    <span class="info-val">${pc.name}（${pc.ruby}）</span></div>
-  <div class="info-row"><span class="info-key">소속</span>    <span class="info-val">${pc.aff}</span></div>
-  <div class="info-row"><span class="info-key">생년월일</span><span class="info-val">${pc.born}</span></div>
-  <div class="info-row"><span class="info-key">신장</span>    <span class="info-val">${pc.height}</span></div>
-  <div class="info-row"><span class="info-key">소개</span>    <span class="info-val">${pc.bio}</span></div>
-  <div class="info-row"><span class="info-key">태그</span>    <span class="info-val" style="display:flex;gap:5px;flex-wrap:wrap;">${pc.tags.map(t=>tagHtml(t)).join('')}</span></div>`;
-}
-
-function tabImages(pc){
-  if(pc.img) return `<div class="img-grid"><div class="img-grid-item"><img src="${pc.img}" alt=""></div></div>`;
-  return `<div class="img-grid">
-    ${[...Array(6)].map(()=>`<div class="img-grid-item">🎭</div>`).join('')}
-  </div>
-  <div class="tab-ph" style="padding-top:14px;">이미지가 없습니다</div>`;
 }
 
 function tabProfile(pc){
