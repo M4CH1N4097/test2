@@ -423,34 +423,33 @@ button { font-family: var(--sans); cursor: pointer; }
 }
 .dh-alias-name {
   font-family: var(--serif);
-  font-size: 26px; font-weight: 700;
+  font-size: 38px; font-weight: 700;
   color: #fff; line-height: 1.1; letter-spacing: .5px;
   text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 40px rgba(0,0,0,.6);
 }
 .dh-alias-ruby {
-  font-size: 13px; color: rgba(255,255,255,.7); letter-spacing: .5px;
-  margin-top: 2px;
+  font-size: 18px; color: rgba(255,255,255,.7); letter-spacing: .5px;
+  margin-top: 3px;
   text-shadow: 0 1px 6px rgba(0,0,0,.9);
 }
 
-/* ── Top-right: info badges (vertical pills) ── */
+/* ── 인적사항 배지: 이름 상단, 가로 배치 ── */
 .dh-badges {
-  position: absolute; top: 10px; right: 10px;
-  display: flex; flex-direction: column;
+  position: absolute;
+  bottom: 128px; right: 14px;
+  display: flex; flex-direction: row;
   align-items: center; gap: 4px;
-  width: 36px;
 }
 .dh-badge {
   background: rgba(46,123,181,.85);
   color: #fff;
   font-size: 9px; font-weight: 500;
-  padding: 4px 5px;
+  padding: 3px 7px;
   border-radius: 3px;
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
+  writing-mode: horizontal-tb;
   letter-spacing: .3px;
   white-space: nowrap;
-  line-height: 1.2;
+  line-height: 1.4;
   backdrop-filter: blur(4px);
   box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }
@@ -458,7 +457,7 @@ button { font-family: var(--sans); cursor: pointer; }
 /* ── Left column: portrait slots ── */
 .dh-portraits {
   position: absolute;
-  left: 10px; top: 50%;
+  left: 30px; top: 50%;
   transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 7px;
 }
@@ -475,26 +474,26 @@ button { font-family: var(--sans); cursor: pointer; }
 }
 .dh-portrait-slot img { width:100%; height:100%; object-fit:cover; }
 
-/* ── Right column: color swatches ── */
+/* ── 컬러 스와치: 우상단, 가로 배치, 2/3 크기 ── */
 .dh-swatches {
   position: absolute;
-  right: 12px; top: 50%;
-  transform: translateY(-50%);
-  display: flex; flex-direction: column; gap: 6px; align-items: center;
+  top: 10px; right: 10px;
+  display: flex; flex-direction: row; gap: 4px; align-items: center;
 }
 .dh-swatch {
-  width: 28px; height: 28px;
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 4px;
+  width: 19px; height: 19px;
+  border: 1px solid rgba(255,255,255,.25);
+  border-radius: 3px;
   background: rgba(255,255,255,.06);
-  box-shadow: 0 2px 8px rgba(0,0,0,.5);
+  box-shadow: 0 2px 6px rgba(0,0,0,.5);
 }
 
-/* ── Center: highlighted quote lines ── */
+/* ── Center: highlighted quote lines (-10도 회전) ── */
 .dh-quotes {
   position: absolute;
   top: 38%; left: 44%;
-  transform: translateX(-20%);
+  transform: translateX(-20%) rotate(-10deg);
+  transform-origin: left center;
   display: flex; flex-direction: column; gap: 3px;
 }
 .dh-quote-line {
