@@ -40,14 +40,14 @@ const owner = {
 
 /*  icons: 1개면 썸네일 우상단 오버레이, 2~3개면 세로로 나열 */
 const pcs = [
-  { id:1,  roll:"CoC 7판", icons:["🎲"],           name:"아리아",  ruby:"アリア",  aff:"탐정 사무소", tags:["성인","여성","탐정"],       bio:"오래된 도시의 뒷골목에서 활동하는 사립탐정. 날카로운 직관으로 사건을 해결한다.",       born:"19??.??.??", height:"163cm", img:null },
-  { id:2,  roll:"SW2.5",  icons:["⚔️","🗡️"],     name:"루카스",  ruby:"ルーカス", aff:"모험자 길드", tags:["성인","남성","전사"],       bio:"북부 출신의 젊은 전사. 동료를 위해서라면 망설임 없이 방패가 된다.",               born:"22세",       height:"182cm", img:null },
-  { id:3,  roll:"CoC 7판", icons:["🎲","💊"],      name:"하나",    ruby:"ハナ",    aff:"대학교 의대", tags:["성인","여성","의대생"],     bio:"의대 3학년생. 평범해 보이지만 알 수 없는 사건에 몇 번이고 휘말리는 운명을 지닌다.", born:"19??.4.7",   height:"157cm", img:null },
-  { id:4,  roll:"인세인",  icons:["🌀","🎭","⚡"],name:"세이버",  ruby:"セイバー", aff:"미상",        tags:["성별불명","비밀"],         bio:"어둠 속에서 나타나 사건을 해결하고 사라지는 수수께끼의 인물.",                       born:"미상",       height:"미상",  img:null },
-  { id:5,  roll:"CoC 7판", icons:["🎲"],           name:"레이나",  ruby:"レイナ",  aff:"무직",        tags:["성인","여성","백수"],       bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",                           born:"19??.9.15",  height:"168cm", img:null },
-  { id:6,  roll:"SW2.5",  icons:["⚔️","🛡️"],    name:"클레어",  ruby:"クレア",  aff:"왕국 기사단", tags:["성인","여성","기사"],       bio:"왕국 최연소 기사 중 한 명. 정의감이 넘치고 직선적인 성격이다.",                     born:"20세",       height:"170cm", img:null },
-  { id:7,  roll:"인세인",  icons:["🌀"],           name:"미래",    ruby:"ミライ",  aff:"고등학교",    tags:["미성년","여성","고등학생"], bio:"남다른 감수성을 지닌 고등학생. 다른 사람이 보지 못하는 것을 볼 수 있다.",            born:"17세",       height:"154cm", img:null },
-  { id:8,  roll:"CoC 7판", icons:["🎲","📜"],     name:"노아",    ruby:"ノア",    aff:"해외 유학생", tags:["성인","남성","유학생"],     bio:"해외에서 온 유학생. 한국어는 유창하지만 가끔 묘한 발언을 해서 주변을 당황하게 한다.", born:"19??.12.3",  height:"175cm", img:null },
+  { id:1,  roll:"CoC 7판", icons:["🎲"],            name:"아리아",  ruby:"アリア",  aff:"탐정 사무소", tags:["성인","여성","탐정"],       bio:"오래된 도시의 뒷골목에서 활동하는 사립탐정. 날카로운 직관으로 사건을 해결한다.",       born:"19??.??.??", height:"163cm", img:null, bgm:{ title:"테마곡 이름", src:null } },
+  { id:2,  roll:"SW2.5",  icons:["⚔️","🗡️"],      name:"루카스",  ruby:"ルーカス", aff:"모험자 길드", tags:["성인","남성","전사"],       bio:"북부 출신의 젊은 전사. 동료를 위해서라면 망설임 없이 방패가 된다.",               born:"22세",       height:"182cm", img:null, bgm:null },
+  { id:3,  roll:"CoC 7판", icons:["🎲","💊"],       name:"하나",    ruby:"ハナ",    aff:"대학교 의대", tags:["성인","여성","의대생"],     bio:"의대 3학년생. 평범해 보이지만 알 수 없는 사건에 몇 번이고 휘말리는 운명을 지닌다.", born:"19??.4.7",   height:"157cm", img:null, bgm:{ title:"테마곡 이름", src:null } },
+  { id:4,  roll:"인세인",  icons:["🌀","🎭","⚡"], name:"세이버",  ruby:"セイバー", aff:"미상",        tags:["성별불명","비밀"],         bio:"어둠 속에서 나타나 사건을 해결하고 사라지는 수수께끼의 인물.",                       born:"미상",       height:"미상",  img:null, bgm:{ title:"테마곡 이름", src:null } },
+  { id:5,  roll:"CoC 7판", icons:["🎲"],            name:"레이나",  ruby:"レイナ",  aff:"무직",        tags:["성인","여성","백수"],       bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",                           born:"19??.9.15",  height:"168cm", img:null, bgm:null },
+  { id:6,  roll:"SW2.5",  icons:["⚔️","🛡️"],     name:"클레어",  ruby:"クレア",  aff:"왕국 기사단", tags:["성인","여성","기사"],       bio:"왕국 최연소 기사 중 한 명. 정의감이 넘치고 직선적인 성격이다.",                     born:"20세",       height:"170cm", img:null, bgm:{ title:"테마곡 이름", src:null } },
+  { id:7,  roll:"인세인",  icons:["🌀"],            name:"미래",    ruby:"ミライ",  aff:"고등학교",    tags:["미성년","여성","고등학생"], bio:"남다른 감수성을 지닌 고등학생. 다른 사람이 보지 못하는 것을 볼 수 있다.",            born:"17세",       height:"154cm", img:null, bgm:null },
+  { id:8,  roll:"CoC 7판", icons:["🎲","📜"],      name:"노아",    ruby:"ノア",    aff:"해외 유학생", tags:["성인","남성","유학생"],     bio:"해외에서 온 유학생. 한국어는 유창하지만 가끔 묘한 발언을 해서 주변을 당황하게 한다.", born:"19??.12.3",  height:"175cm", img:null, bgm:{ title:"테마곡 이름", src:null } },
 ];
 
 /* ══════════════════════════════════════════
@@ -175,8 +175,27 @@ function pagePc(id){
   if(!pc) return `<div class="ph-page"><div class="ph-title">404</div><p class="ph-sub">캐릭터를 찾을 수 없습니다.</p><br><a href="#/" style="color:var(--gold);font-size:13px;">← 돌아가기</a></div>`;
 
   const rc = rollClass(pc.roll);
+  const hasBgm = !!(pc.bgm?.src);
+  const bgmTitle = pc.bgm?.title ?? '등록된 곡 없음';
   return `
   <a href="#/" class="detail-back">← PC 목록</a>
+
+  <!-- Character Music Player -->
+  <div class="pc-player">
+    <div class="pc-player-btns">
+      <button class="pc-player-btn" id="pc-prev" aria-label="이전">&#9664;&#9664;</button>
+      <button class="pc-player-btn pp" id="pc-play" aria-label="재생/일시정지" ${!hasBgm ? 'disabled style="opacity:.35;cursor:default;"' : ''}>&#9654;</button>
+      <button class="pc-player-btn" id="pc-next" aria-label="다음">&#9654;&#9654;</button>
+    </div>
+    <div class="pc-player-info">
+      <div class="pc-player-label">CHARACTER BGM</div>
+      <div class="pc-player-title" id="pc-player-title">${bgmTitle}</div>
+    </div>
+    <div class="pc-player-bar-wrap" id="pc-bar-wrap">
+      <div class="pc-player-bar-fill" id="pc-bar-fill"></div>
+    </div>
+    <div class="pc-player-vol">🔊<input type="range" min="0" max="100" value="70" id="pc-vol" aria-label="볼륨" /></div>
+  </div>
 
   <!-- Hero -->
   <div class="d-hero">
@@ -479,6 +498,8 @@ function bindHomeEvents(){
 
 function bindPcEvents(id){
   const pc=pcs.find(p=>p.id===+id); if(!pc) return;
+
+  /* ── 탭 전환 ── */
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
@@ -486,6 +507,52 @@ function bindPcEvents(id){
       document.getElementById('tab-body').innerHTML = tabContent(btn.dataset.tab, pc);
     });
   });
+
+  /* ── 캐릭터 BGM 플레이어 ── */
+  const playBtn  = document.getElementById('pc-play');
+  const barFill  = document.getElementById('pc-bar-fill');
+  const volInput = document.getElementById('pc-vol');
+  if(!playBtn) return;
+
+  /* 전용 audio 엘리먼트 (전역 BGM과 별개) */
+  let pcAudio = document.getElementById('pc-audio');
+  if(!pcAudio){
+    pcAudio = document.createElement('audio');
+    pcAudio.id = 'pc-audio';
+    document.body.appendChild(pcAudio);
+  }
+
+  if(pc.bgm?.src){
+    pcAudio.src = pc.bgm.src;
+    pcAudio.volume = (volInput?.value ?? 70) / 100;
+  }
+
+  let playing = false;
+
+  playBtn.addEventListener('click', ()=>{
+    if(!pc.bgm?.src) return;
+    if(playing){ pcAudio.pause(); playBtn.innerHTML='&#9654;'; }
+    else        { pcAudio.play().catch(()=>{}); playBtn.innerHTML='&#9646;&#9646;'; }
+    playing = !playing;
+  });
+
+  pcAudio.addEventListener('timeupdate', ()=>{
+    if(pcAudio.duration && barFill)
+      barFill.style.width = (pcAudio.currentTime / pcAudio.duration * 100) + '%';
+  });
+
+  pcAudio.addEventListener('ended', ()=>{
+    playing = false;
+    if(playBtn) playBtn.innerHTML = '&#9654;';
+  });
+
+  volInput?.addEventListener('input', e=>{
+    pcAudio.volume = e.target.value / 100;
+  });
+
+  /* 페이지 이동 시 재생 중단 */
+  const stopOnLeave = ()=>{ pcAudio.pause(); playing=false; };
+  window.addEventListener('hashchange', stopOnLeave, { once: true });
 }
 
 /* ══════════════════════════════════════════

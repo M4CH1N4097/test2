@@ -319,6 +319,66 @@ button { font-family: var(--sans); cursor: pointer; }
 
 
 /* ════════════════════════════════════════════════
+   PC DETAIL — CHARACTER MUSIC PLAYER
+════════════════════════════════════════════════ */
+.pc-player {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-card);
+  padding: 10px 16px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.pc-player-btns {
+  display: flex; align-items: center; gap: 6px;
+  flex-shrink: 0;
+}
+.pc-player-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--gold);
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 9px;
+  transition: .15s;
+}
+.pc-player-btn:hover   { border-color: var(--gold); background: rgba(197,160,85,.1); }
+.pc-player-btn.pp      { width:32px; height:32px; font-size:11px; }
+
+.pc-player-info {
+  flex: 1; min-width: 0;
+}
+.pc-player-label { font-size: 10px; color: var(--text-dim); margin-bottom: 2px; }
+.pc-player-title { font-size: 13px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.pc-player-bar-wrap {
+  flex: 1; max-width: 240px;
+  height: 2px;
+  background: rgba(255,255,255,.08);
+  border-radius: 2px;
+  overflow: hidden;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.pc-player-bar-fill {
+  height: 100%; width: 0%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-lt));
+  transition: width .5s linear;
+}
+
+.pc-player-vol {
+  display: flex; align-items: center; gap: 5px;
+  font-size: 11px; color: var(--text-dim);
+  flex-shrink: 0;
+}
+.pc-player-vol input { width: 56px; height: 2px; accent-color: var(--gold); }
+
+
+/* ════════════════════════════════════════════════
    PC DETAIL — HERO
 ════════════════════════════════════════════════ */
 .detail-back {
