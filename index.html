@@ -283,14 +283,11 @@ function pagePc(id){
         `<span class="dh-badge">${v}</span>`).join('')}
     </div>
 
-    <!-- 좌측 열: 포트레이트 슬롯 (4개) -->
-    <div class="dh-portraits">
-      ${[...Array(4)].map((_,i)=>{
-        const src=(pc.portraits||[])[i]||null;
-        return `<div class="dh-portrait-slot">
-          ${src?`<img src="${src}" alt="포트레이트${i+1}">`:''}
-        </div>`;
-      }).join('')}
+    <!-- 좌측 열: 포트레이트 (화살표 + 슬롯) -->
+    <div class="dh-portrait-col">
+      <button class="dh-port-arrow" id="port-up" aria-label="위로">▲</button>
+      <div class="dh-portraits" id="dh-portraits"></div>
+      <button class="dh-port-arrow" id="port-dn" aria-label="아래로">▼</button>
     </div>
 
     <!-- 우측 열: 컬러 팔레트 스와치 -->
@@ -623,6 +620,39 @@ function bindPcEvents(id){
       btn.classList.add('on');
       document.getElementById('tab-body').innerHTML = tabContent(btn.dataset.tab, pc);
     });
+  });
+
+  /* ── 포트레이트 페이지네이션 ── */
+  const PAGE = 4;
+  const portraits = pc.portraits || [];
+  let offset = 0;
+
+  function renderPortraits(){
+    const wrap = document.getElementById('dh-portraits');
+    const upBtn = document.getElementById('port-up');
+    const dnBtn = document.getElementById('port-dn');
+    if(!wrap) return;
+
+    /* 슬롯 4개 렌더 */
+    wrap.innerHTML = [...Array(PAGE)].map((_,i)=>{
+      const src = portraits[offset + i] || null;
+      return `<div class="dh-portrait-slot">
+        ${src ? `<img src="${src}" alt="포트레이트${offset+i+1}">` : ''}
+      </div>`;
+    }).join('');
+
+    /* 화살표 활성/비활성 */
+    if(upBtn) upBtn.disabled = offset <= 0;
+    if(dnBtn) dnBtn.disabled = offset + PAGE >= Math.max(portraits.length, PAGE);
+  }
+
+  renderPortraits();
+
+  document.getElementById('port-up')?.addEventListener('click', ()=>{
+    if(offset > 0){ offset--; renderPortraits(); }
+  });
+  document.getElementById('port-dn')?.addEventListener('click', ()=>{
+    if(offset + PAGE < Math.max(portraits.length, PAGE)){ offset++; renderPortraits(); }
   });
 
   /* ── 캐릭터 BGM 플레이어 ── */

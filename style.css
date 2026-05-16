@@ -436,7 +436,7 @@ button { font-family: var(--sans); cursor: pointer; }
 /* ── 인적사항 배지: 이름 상단, 가로 배치 ── */
 .dh-badges {
   position: absolute;
-  bottom: 128px; right: 14px;
+  bottom: 172px; right: 14px;
   display: flex; flex-direction: row;
   align-items: center; gap: 4px;
 }
@@ -454,11 +454,30 @@ button { font-family: var(--sans); cursor: pointer; }
   box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }
 
-/* ── Left column: portrait slots ── */
-.dh-portraits {
+/* ── Left column: portrait wrapper (arrows + slots) ── */
+.dh-portrait-col {
   position: absolute;
-  left: 30px; top: 50%;
+  left: 30px; top: calc(50% + 10px);
   transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 5px;
+  align-items: center;
+}
+.dh-port-arrow {
+  width: 72px; height: 16px;
+  background: rgba(0,0,0,.35);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 3px;
+  color: rgba(255,255,255,.5);
+  font-size: 9px; line-height: 1;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background .15s, color .15s;
+  display: flex; align-items: center; justify-content: center;
+}
+.dh-port-arrow:hover:not(:disabled) { background: rgba(255,255,255,.18); color: #fff; }
+.dh-port-arrow:disabled { opacity: .18; cursor: default; }
+
+.dh-portraits {
   display: flex; flex-direction: column; gap: 7px;
 }
 .dh-portrait-slot {
@@ -491,9 +510,9 @@ button { font-family: var(--sans); cursor: pointer; }
 /* ── Center: highlighted quote lines (-10도 회전) ── */
 .dh-quotes {
   position: absolute;
-  top: 38%; left: 44%;
-  transform: translateX(-20%) rotate(-10deg);
-  transform-origin: left center;
+  top: 38%; left: 50%;
+  transform: translateX(-50%) rotate(-7deg);
+  transform-origin: center center;
   display: flex; flex-direction: column; gap: 3px;
 }
 .dh-quote-line {
