@@ -510,7 +510,7 @@ button { font-family: var(--sans); cursor: pointer; }
 /* ── Center: highlighted quote lines (-10도 회전) ── */
 .dh-quotes {
   position: absolute;
-  top: 38%; left: 50%;
+  top: calc(38% + 65px); left: 50%;
   transform: translateX(-50%) rotate(-7deg);
   transform-origin: center center;
   display: flex; flex-direction: column; gap: 3px;
