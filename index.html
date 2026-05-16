@@ -38,65 +38,82 @@ const owner = {
   sns:    [{ label:"Twitter / X", url:"#" }, { label:"Misskey", url:"#" }, { label:"Discord", url:"#" }]
 };
 
-/*  icons: 1개면 썸네일 우상단 오버레이, 2~3개면 세로로 나열 */
+/*  icons: 1개면 썸네일 우상단 오버레이, 2~3개면 세로로 나열
+    colors: 캐릭터 컬러 팔레트 (최대 4개)
+    scenario: 시나리오명 (optional) */
 const pcs = [
   { id:1,  roll:"CoC 7판", icons:["🎲"],            name:"아리아",  ruby:"アリア",  alias:"진홍의 탐정",   aliasRuby:"しんくのたんてい", aff:"탐정 사무소",  tags:["성인","여성","탐정"],
-    catchphrase:"진실은 언제나 하나.",  quote:"이 도시의 어둠을 걷는 것이 내 일이야. 두렵지 않냐고? 두렵지 않다면 거짓말이지.",
-    info:{ 나이:"2?세", 키:"163cm", 성별:"여성", 직업:"사립탐정" },
+    catchphrase:"진실은 언제나 하나.",
+    quote:"이 도시의 어둠을 걷는 것이 내 일이야.\n두렵지 않냐고?\n두렵지 않다면 거짓말이지.",
+    info:{ 나이:"2?세", 키:"163cm", 성별:"여성", 직업:"사립탐정" }, scenario:"시나리오명",
+    colors:["#8b4a6e","#2e4a8b","#c8a04a","#3a3a4e"],
     bio:"오래된 도시의 뒷골목에서 활동하는 사립탐정. 날카로운 직관으로 사건을 해결한다.",
     born:"19??.??.??", height:"163cm", img:null, imgSD:null, portraits:[null,null],
     bgm:{ title:"테마곡 이름", src:null } },
 
   { id:2,  roll:"SW2.5",  icons:["⚔️","🗡️"],      name:"루카스",  ruby:"ルーカス", alias:"철벽의 방패",   aliasRuby:"てっぺきのたて",   aff:"모험자 길드",  tags:["성인","남성","전사"],
-    catchphrase:"동료를 지키는 것이 나의 검.",  quote:"강함이란 혼자 이기는 것이 아니다. 동료와 함께 일어서는 것이다.",
-    info:{ 나이:"22세", 키:"182cm", 성별:"남성", 직업:"전사" },
+    catchphrase:"동료를 지키는 것이 나의 검.",
+    quote:"강함이란 혼자 이기는 것이 아니다.\n동료와 함께 일어서는 것이다.",
+    info:{ 나이:"22세", 키:"182cm", 성별:"남성", 직업:"전사" }, scenario:null,
+    colors:["#4a6e8b","#8b6a2e","#2e6e4a","#6e2e2e"],
     bio:"북부 출신의 젊은 전사. 동료를 위해서라면 망설임 없이 방패가 된다.",
     born:"22세", height:"182cm", img:null, imgSD:null, portraits:[null],
     bgm:null },
 
   { id:3,  roll:"CoC 7판", icons:["🎲","💊"],       name:"하나",    ruby:"ハナ",    alias:null,            aliasRuby:null,                aff:"대학교 의대",  tags:["성인","여성","의대생"],
-    catchphrase:"살리는 것이 의사의 사명.",  quote:"모르는 것이 있으면 공부하면 돼. 그게 나한테는 버릇이 됐어.",
-    info:{ 나이:"2?세", 키:"157cm", 성별:"여성", 직업:"의대생" },
+    catchphrase:"살리는 것이 의사의 사명.",
+    quote:"모르는 것이 있으면 공부하면 돼.\n그게 나한테는 버릇이 됐어.",
+    info:{ 나이:"2?세", 키:"157cm", 성별:"여성", 직업:"의대생" }, scenario:"시나리오명",
+    colors:["#4a8b6e","#8b4a4a","#6e4a8b","#4a6e4a"],
     bio:"의대 3학년생. 평범해 보이지만 알 수 없는 사건에 몇 번이고 휘말리는 운명을 지닌다.",
     born:"19??.4.7", height:"157cm", img:null, imgSD:null, portraits:[null,null,null],
     bgm:{ title:"테마곡 이름", src:null } },
 
   { id:4,  roll:"인세인",  icons:["🌀","🎭","⚡"],  name:"세이버",  ruby:"セイバー", alias:"그림자의 검",   aliasRuby:"かげのけん",        aff:"미상",         tags:["성별불명","비밀"],
-    catchphrase:"진실은 어둠 속에 있다.",  quote:"나는 무엇인가. 그것조차 이제는 알 수 없다.",
-    info:{ 나이:"미상", 키:"미상", 성별:"불명", 직업:"미상" },
+    catchphrase:"진실은 어둠 속에 있다.",
+    quote:"나는 무엇인가.\n그것조차 이제는 알 수 없다.",
+    info:{ 나이:"미상", 키:"미상", 성별:"불명", 직업:"미상" }, scenario:"시나리오명",
+    colors:["#2e2e3e","#6e2e6e","#2e6e6e","#8b8b2e"],
     bio:"어둠 속에서 나타나 사건을 해결하고 사라지는 수수께끼의 인물.",
     born:"미상", height:"미상", img:null, imgSD:null, portraits:[],
     bgm:{ title:"테마곡 이름", src:null } },
 
   { id:5,  roll:"CoC 7판", icons:["🎲"],            name:"레이나",  ruby:"レイナ",  alias:null,            aliasRuby:null,                aff:"무직",         tags:["성인","여성","백수"],
-    catchphrase:"정보는 힘이야.",  quote:"아무것도 안 하는 것처럼 보이지? 그게 바로 나의 전략이야.",
-    info:{ 나이:"2?세", 키:"168cm", 성별:"여성", 직업:"무직" },
+    catchphrase:"정보는 힘이야.",
+    quote:"아무것도 안 하는 것처럼 보이지?\n그게 바로 나의 전략이야.",
+    info:{ 나이:"2?세", 키:"168cm", 성별:"여성", 직업:"무직" }, scenario:null,
+    colors:["#8b7a2e","#4a8b8b","#8b4a2e","#2e4a2e"],
     bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",
     born:"19??.9.15", height:"168cm", img:null, imgSD:null, portraits:[null,null],
     bgm:null },
 
   { id:6,  roll:"SW2.5",  icons:["⚔️","🛡️"],     name:"클레어",  ruby:"クレア",  alias:"왕국의 검",     aliasRuby:"おうこくのけん",    aff:"왕국 기사단",  tags:["성인","여성","기사"],
-    catchphrase:"정의를 위해 이 검을 든다.",  quote:"규칙을 지키는 것과 옳은 일을 하는 것이 다를 때, 나는 항상 후자를 택한다.",
-    info:{ 나이:"20세", 키:"170cm", 성별:"여성", 직업:"기사" },
+    catchphrase:"정의를 위해 이 검을 든다.",
+    quote:"규칙과 옳음이 다를 때,\n나는 항상 후자를 택한다.",
+    info:{ 나이:"20세", 키:"170cm", 성별:"여성", 직업:"기사" }, scenario:"시나리오명",
+    colors:["#8b7a4a","#4a6e8b","#8b4a4a","#4a4a6e"],
     bio:"왕국 최연소 기사 중 한 명. 정의감이 넘치고 직선적인 성격이다.",
     born:"20세", height:"170cm", img:null, imgSD:null, portraits:[null,null,null,null],
     bgm:{ title:"테마곡 이름", src:null } },
 
   { id:7,  roll:"인세인",  icons:["🌀"],            name:"미래",    ruby:"ミライ",  alias:null,            aliasRuby:null,                aff:"고등학교",     tags:["미성년","여성","고등학생"],
-    catchphrase:"보이는 것이 전부가 아니야.",  quote:"가끔 다른 게 보여. 아무도 믿지 않겠지만.",
-    info:{ 나이:"17세", 키:"154cm", 성별:"여성", 직업:"고등학생" },
+    catchphrase:"보이는 것이 전부가 아니야.",
+    quote:"가끔 다른 게 보여.\n아무도 믿지 않겠지만.",
+    info:{ 나이:"17세", 키:"154cm", 성별:"여성", 직업:"고등학생" }, scenario:null,
+    colors:["#6e4a8b","#4a8b6e","#8b8b4a","#4a4a8b"],
     bio:"남다른 감수성을 지닌 고등학생. 다른 사람이 보지 못하는 것을 볼 수 있다.",
     born:"17세", height:"154cm", img:null, imgSD:null, portraits:[null],
     bgm:null },
 
   { id:8,  roll:"CoC 7판", icons:["🎲","📜"],      name:"노아",    ruby:"ノア",    alias:"이방인",        aliasRuby:"いほうじん",        aff:"해외 유학생",  tags:["성인","남성","유학생"],
-    catchphrase:"이 나라는 아직도 불가사의해.",  quote:"고향에서는 당연했던 것들이 여기선 전혀 통하지 않더라고. 흥미롭지 않아?",
-    info:{ 나이:"2?세", 키:"175cm", 성별:"남성", 직업:"유학생" },
+    catchphrase:"이 나라는 아직도 불가사의해.",
+    quote:"고향에서 당연했던 것들이 여기선 통하지 않아.\n흥미롭지 않아?",
+    info:{ 나이:"2?세", 키:"175cm", 성별:"남성", 직업:"유학생" }, scenario:"시나리오명",
+    colors:["#2e6e8b","#8b6e2e","#4a8b4a","#6e2e4a"],
     bio:"해외에서 온 유학생. 한국어는 유창하지만 가끔 묘한 발언을 해서 주변을 당황하게 한다.",
     born:"19??.12.3", height:"175cm", img:null, imgSD:null, portraits:[null,null],
     bgm:{ title:"테마곡 이름", src:null } },
 ];
-
 /* ══════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════ */
@@ -244,67 +261,76 @@ function pagePc(id){
     <div class="pc-player-vol">🔊<input type="range" min="0" max="100" value="70" id="pc-vol" aria-label="볼륨" /></div>
   </div>
 
-  <!-- Hero: magazine layout -->
+  <!-- Hero: reference-sheet layout -->
   <div class="d-hero">
 
-    <!-- LEFT: full-body image -->
-    <div class="d-hero-left">
-      ${pc.img ? `<img class="d-hl-fullbody" src="${pc.img}" alt="${pc.name} 전신 이미지">` : `<div class="d-hl-ph">🎭</div>`}
-      <div class="d-hl-grad-t"></div>
-      <div class="d-hl-grad-b"></div>
-      <div class="d-hl-aff">${pc.aff}</div>
-      <div class="d-hl-sd" title="SD 이미지">
-        ${pc.imgSD ? `<img src="${pc.imgSD}" alt="SD">` : '🎨'}
-      </div>
+    <!-- 전신 이미지 (bg) -->
+    <div class="dh-fullbody">
+      ${pc.img
+        ? `<img src="${pc.img}" alt="${pc.name} 전신">`
+        : `<span class="dh-fullbody-ph">🎭</span>`}
     </div>
 
-    <!-- RIGHT: editorial content -->
-    <div class="d-hero-right">
+    <!-- 구분선 -->
+    <div class="dh-line-l"></div>
+    <div class="dh-line-r"></div>
 
-      <!-- Rule badge -->
-      <div class="d-hr-top">${rollTagHtml(pc.roll)}</div>
-
-      <!-- Alias + Name + Catchphrase -->
-      <div>
-        ${pc.alias
-          ? `<div class="d-hr-alias"><ruby>${pc.alias}<rt>${pc.aliasRuby||''}</rt></ruby></div>`
-          : ''}
-        <div class="d-hr-name-main"><ruby>${pc.name}<rt>${pc.ruby}</rt></ruby></div>
-        ${pc.catchphrase ? `<div class="d-hr-catch">${pc.catchphrase}</div>` : ''}
-      </div>
-
-      <div class="d-hr-div"></div>
-
-      <!-- Quote -->
-      ${pc.quote ? `
-      <div class="d-hr-quote-wrap">
-        <span class="d-hr-qmark">"</span>
-        <div class="d-hr-quote">${pc.quote}</div>
-      </div>
-      <div class="d-hr-div"></div>` : ''}
-
-      <!-- Personal info -->
-      <div class="d-hr-info">
-        ${Object.entries(pc.info||{}).map(([k,v])=>`
-          <div class="d-info-item">
-            <div class="d-info-lbl">${k}</div>
-            <div class="d-info-val">${v}</div>
-          </div>`).join('')}
-      </div>
-
-      <!-- Portraits (최대 4개) -->
-      <div class="d-hr-portraits">
-        ${[...Array(4)].map((_,i) => {
-          const src = (pc.portraits||[])[i] || null;
-          return `<div>
-            <div class="d-portrait">
-              ${src ? `<img src="${src}" alt="포트레이트 ${i+1}">` : '🎭'}
-            </div>
-          </div>`;
-        }).join('')}
-      </div>
-
+    <!-- 좌상단: 「alias」 -->
+    <div class="dh-alias-block">
+      <div class="dh-alias-name">「${pc.alias || pc.name}」</div>
+      <div class="dh-alias-ruby">${pc.aliasRuby || pc.ruby}</div>
     </div>
+
+    <!-- 우측: 인적사항 배지 -->
+    <div class="dh-badges">
+      ${Object.entries(pc.info||{}).map(([,v])=>
+        `<span class="dh-badge">${v}</span>`).join('')}
+    </div>
+
+    <!-- 좌측 열: 포트레이트 슬롯 (4개) -->
+    <div class="dh-portraits">
+      ${[...Array(4)].map((_,i)=>{
+        const src=(pc.portraits||[])[i]||null;
+        return `<div class="dh-portrait-slot">
+          ${src?`<img src="${src}" alt="포트레이트${i+1}">`:''}
+        </div>`;
+      }).join('')}
+    </div>
+
+    <!-- 우측 열: 컬러 팔레트 스와치 -->
+    <div class="dh-swatches">
+      ${[...Array(4)].map((_,i)=>{
+        const c=(pc.colors||[])[i]||null;
+        return `<div class="dh-swatch" style="${c?`background:${c}`:''}" title="${c||''}"></div>`;
+      }).join('')}
+    </div>
+
+    <!-- 중앙 오버레이: 한마디 (하이라이트) -->
+    ${pc.quote ? `<div class="dh-quotes">
+      ${pc.quote.split('\\n').slice(0,3).map(line=>
+        `<div class="dh-quote-line">${line}</div>`).join('')}
+    </div>` : ''}
+
+    <!-- 우하단: 캐릭터 이름 -->
+    <div class="dh-name-block">
+      <div class="dh-char-name">${pc.name}</div>
+      <div class="dh-char-ruby">${pc.ruby}</div>
+    </div>
+
+    <!-- 우하단: SD 이미지 -->
+    <div class="dh-sd">
+      ${pc.imgSD?`<img src="${pc.imgSD}" alt="SD">`:'🎨'}
+    </div>
+
+    <!-- 좌하단: 룰 + 시나리오 + 캐치프레이즈 -->
+    <div class="dh-bottom-l">
+      <div class="dh-meta">
+        <span>${pc.roll}</span>
+        ${pc.scenario?`<span>${pc.scenario}</span>`:''}
+      </div>
+      <div class="dh-catchphrase">${pc.catchphrase||''}</div>
+    </div>
+
   </div>
 
   <!-- Tabs -->
