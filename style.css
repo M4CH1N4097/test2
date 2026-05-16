@@ -415,37 +415,33 @@ button { font-family: var(--sans); cursor: pointer; }
 .dh-fullbody-ph { font-size: 130px; opacity: .05; color: #fff; }
 
 /* ── Thin separator lines ── */
-.dh-line-l, .dh-line-r {
-  position: absolute; top: 4%; bottom: 4%; width: 1px;
-  background: rgba(255,255,255,.1);
-  pointer-events: none;
-}
-.dh-line-l { left: 88px; }
-.dh-line-r { right: 48px; }
+/* 구분선 제거 — 레이어 형식 */
 
 /* ── Top-left: 「alias」block ── */
 .dh-alias-block {
-  position: absolute; top: 16px; left: 96px;
+  position: absolute; top: 16px; left: 14px;
 }
 .dh-alias-name {
   font-family: var(--serif);
   font-size: 26px; font-weight: 700;
-  color: var(--text); line-height: 1.1; letter-spacing: .5px;
+  color: #fff; line-height: 1.1; letter-spacing: .5px;
+  text-shadow: 0 2px 12px rgba(0,0,0,.9), 0 0 40px rgba(0,0,0,.6);
 }
 .dh-alias-ruby {
-  font-size: 13px; color: var(--text-sm); letter-spacing: .5px;
+  font-size: 13px; color: rgba(255,255,255,.7); letter-spacing: .5px;
   margin-top: 2px;
+  text-shadow: 0 1px 6px rgba(0,0,0,.9);
 }
 
 /* ── Top-right: info badges (vertical pills) ── */
 .dh-badges {
-  position: absolute; top: 10px; right: 8px;
+  position: absolute; top: 10px; right: 10px;
   display: flex; flex-direction: column;
   align-items: center; gap: 4px;
   width: 36px;
 }
 .dh-badge {
-  background: #2e7bb5;
+  background: rgba(46,123,181,.85);
   color: #fff;
   font-size: 9px; font-weight: 500;
   padding: 4px 5px;
@@ -455,44 +451,49 @@ button { font-family: var(--sans); cursor: pointer; }
   letter-spacing: .3px;
   white-space: nowrap;
   line-height: 1.2;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }
 
 /* ── Left column: portrait slots ── */
 .dh-portraits {
   position: absolute;
-  left: 8px; top: 50%;
+  left: 10px; top: 50%;
   transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 7px;
 }
 .dh-portrait-slot {
   width: 72px; height: 72px;
-  border: 1px solid rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.18);
   border-radius: 3px;
-  background: rgba(255,255,255,.03);
+  background: rgba(0,0,0,.35);
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  font-size: 18px; color: rgba(255,255,255,.08);
+  font-size: 18px; color: rgba(255,255,255,.12);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
 }
 .dh-portrait-slot img { width:100%; height:100%; object-fit:cover; }
 
 /* ── Right column: color swatches ── */
 .dh-swatches {
   position: absolute;
-  right: 10px; top: 50%;
+  right: 12px; top: 50%;
   transform: translateY(-50%);
   display: flex; flex-direction: column; gap: 6px; align-items: center;
 }
 .dh-swatch {
   width: 28px; height: 28px;
-  border: 1px solid rgba(255,255,255,.12);
-  border-radius: 3px;
-  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 4px;
+  background: rgba(255,255,255,.06);
+  box-shadow: 0 2px 8px rgba(0,0,0,.5);
 }
 
 /* ── Center: highlighted quote lines ── */
 .dh-quotes {
   position: absolute;
-  top: 38%; left: 46%;
+  top: 38%; left: 44%;
   transform: translateX(-20%);
   display: flex; flex-direction: column; gap: 3px;
 }
@@ -502,48 +503,54 @@ button { font-family: var(--sans); cursor: pointer; }
   color: #fff;
   font-size: 12px; line-height: 1.4;
   padding: 3px 10px; border-radius: 2px;
-  backdrop-filter: blur(2px);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 2px 12px rgba(0,0,0,.4);
   white-space: nowrap;
 }
 
 /* ── Bottom-right: character name ── */
 .dh-name-block {
   position: absolute;
-  bottom: 96px; right: 56px;
+  bottom: 96px; right: 14px;
   text-align: right;
 }
 .dh-char-name {
   font-family: var(--serif);
   font-size: 34px; font-weight: 700;
-  color: var(--text); line-height: 1.1;
+  color: #fff; line-height: 1.1;
+  text-shadow: 0 2px 16px rgba(0,0,0,.95), 0 0 60px rgba(0,0,0,.7);
 }
 .dh-char-ruby {
-  font-size: 14px; color: var(--text-sm); letter-spacing: .5px;
+  font-size: 14px; color: rgba(255,255,255,.65); letter-spacing: .5px;
   margin-top: 2px;
+  text-shadow: 0 1px 8px rgba(0,0,0,.9);
 }
 
 /* ── Bottom-right: SD image ── */
 .dh-sd {
-  position: absolute; bottom: 8px; right: 56px;
+  position: absolute; bottom: 10px; right: 14px;
   width: 86px; height: 86px;
   display: flex; align-items: center; justify-content: center;
-  font-size: 26px; color: rgba(255,255,255,.1);
+  font-size: 26px; color: rgba(255,255,255,.15);
   overflow: hidden;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,.7));
 }
 .dh-sd img { width:100%; height:100%; object-fit:contain; }
 
 /* ── Bottom-left: rule + catchphrase ── */
 .dh-bottom-l {
-  position: absolute; bottom: 12px; left: 96px;
+  position: absolute; bottom: 12px; left: 14px;
 }
 .dh-meta {
-  font-size: 11px; color: var(--text-dim);
+  font-size: 11px; color: rgba(255,255,255,.5);
   display: flex; gap: 10px; margin-bottom: 3px;
+  text-shadow: 0 1px 6px rgba(0,0,0,.9);
 }
 .dh-catchphrase {
   font-family: var(--serif);
   font-size: 22px; font-weight: 700;
-  color: var(--text); letter-spacing: .5px;
+  color: #fff; letter-spacing: .5px;
+  text-shadow: 0 2px 14px rgba(0,0,0,.95), 0 0 40px rgba(0,0,0,.6);
 }
 
 
