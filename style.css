@@ -8,9 +8,9 @@
    └─────────────────────────────────────────────┘ */
 :root {
   /* ── 배경 ── */
-  --bg:           #f5f2ec;   /* 따뜻한 흰 배경 */
-  --bg-card:      #ffffff;   /* 카드 배경 */
-  --bg-hover:     #ede9e1;   /* 호버 */
+  --bg:           #ffffff;
+  --bg-card:      #ffffff;
+  --bg-hover:     #f5f5f5;
 
   /* ── 테두리 ── */
   --border:       rgba(0,0,0,0.10);
@@ -131,15 +131,13 @@ button { font-family: var(--sans); cursor: pointer; }
 .owner {
   display: grid;
   grid-template-columns: 190px 1fr;
-  border: 1px solid var(--border);
-  border-radius: 8px;
   overflow: hidden;
-  background: var(--bg-card);
+  background: transparent;
   margin-bottom: 32px;
 }
 .owner-l {
   padding: 24px 16px;
-  border-right: 1px solid var(--border);
+  border-right: none;
   display: flex; flex-direction: column;
   align-items: center; gap: 12px;
 }
@@ -170,7 +168,7 @@ button { font-family: var(--sans); cursor: pointer; }
 .owner-r     { display:flex; flex-direction:column; }
 .row-tags {
   padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
   display: flex; align-items:center; gap:6px; flex-wrap:wrap;
 }
 .bio {
@@ -180,7 +178,7 @@ button { font-family: var(--sans); cursor: pointer; }
 }
 .row-sns {
   padding: 10px 16px;
-  border-top: 1px solid var(--border);
+  border-top: none;
   display: flex; align-items:center; gap:8px; flex-wrap:wrap;
 }
 .sns-a {
@@ -313,6 +311,7 @@ button { font-family: var(--sans); cursor: pointer; }
   padding: 9px 8px 10px;
   text-align: center;
   border-top: 1px solid var(--border);
+  background: #ffffff;
 }
 .ruby    { display:block; font-size:9px; color:var(--text-dim); letter-spacing:1.5px; margin-bottom:2px; }
 .pc-name { font-family:var(--serif); font-size:18px; font-weight:600; color:var(--text); line-height:1.2; }
