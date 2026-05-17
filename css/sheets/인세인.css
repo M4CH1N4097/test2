@@ -1,0 +1,55 @@
+/* ════════════════════════════════════════════════
+   인세인 시트 스타일
+   css/sheets/인세인.css
+════════════════════════════════════════════════ */
+
+.sheet-insane .sheet-ttl {
+  color: #1a1a1a;
+  border-bottom-color: rgba(0,0,0,.15);
+}
+
+/* ── 능력치 그리드 ── */
+.ins-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.ins-stat {
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 2px;
+  padding: 10px 6px 8px;
+  text-align: center;
+  background: rgba(0,0,0,.02);
+}
+.is-name { font-size: 10px; color: var(--text-dim); margin-bottom: 4px; }
+.is-val  { font-family: var(--serif); font-size: 24px; font-weight: 600; color: #1a1a1a; line-height: 1; }
+
+/* ── 태그형 목록 ── */
+.ins-list { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.ins-fear {
+  font-size: 12px;
+  color: #fff;
+  padding: 3px 10px;
+  border: 1px solid #1a1a1a;
+  border-radius: 2px;
+  background: #1a1a1a;
+}
+.ins-abil {
+  font-size: 12px;
+  color: var(--text-sm);
+  padding: 3px 10px;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 2px;
+}
+
+/* ── 기억 목록 ── */
+.ins-mem-item {
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(0,0,0,.06);
+  font-size: 13px;
+  color: var(--text-sm);
+}
+.ins-mem-item:last-child { border-bottom: none; }
+.ins-mem-label { font-size: 11px; color: var(--text-dim); margin-bottom: 3px; }

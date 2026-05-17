@@ -1,0 +1,67 @@
+/* ════════════════════════════════════════════════
+   CoC 7판 시트 스타일
+   css/sheets/CoC_7판.css
+════════════════════════════════════════════════ */
+
+.sheet-coc .sheet-ttl {
+  color: #1a1a1a;
+  border-bottom-color: rgba(0,0,0,.15);
+}
+
+/* ── 능력치 그리드 ── */
+.coc-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.coc-stat {
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 2px;
+  padding: 10px 6px 8px;
+  text-align: center;
+  background: rgba(0,0,0,.02);
+}
+.cs-name {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 1px;
+  margin-bottom: 4px;
+}
+.cs-val {
+  font-family: var(--serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: #0c0c0c;
+  line-height: 1;
+}
+.cs-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  margin-top: 3px;
+}
+
+/* ── 파생 스탯 ── */
+.coc-derived {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.cd-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 14px;
+  border: 1px solid rgba(0,0,0,.12);
+  border-radius: 2px;
+  background: rgba(0,0,0,.02);
+}
+.cd-lbl { font-size: 11px; color: var(--text-dim); }
+.cd-val { font-family: var(--serif); font-size: 20px; color: #1a1a1a; }
+
+/* ── 기술 목록 ── */
+.coc-skills  { display: flex; flex-direction: column; gap: 6px; }
+.coc-skill   { display: flex; align-items: center; gap: 10px; font-size: 12px; }
+.csk-name    { min-width: 70px; color: var(--text-sm); }
+.csk-bar     { flex: 1; height: 2px; background: rgba(0,0,0,.08); border-radius: 1px; overflow: hidden; }
+.csk-fill    { height: 100%; background: #1a1a1a; border-radius: 1px; opacity: .55; }
+.csk-val     { min-width: 28px; text-align: right; color: #1a1a1a; font-size: 12px; }

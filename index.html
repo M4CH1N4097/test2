@@ -25,6 +25,7 @@
 <main id="app"></main>
 <audio id="bgm-audio" loop></audio>
 
+<script src="js/sheets/registry.js"></script>
 <script>
 /* ══════════════════════════════════════════
    DATA  —  이후 Google Sheets API 로 교체
@@ -51,15 +52,6 @@ const pcs = [
     born:"19??.??.??", height:"163cm", img:null, imgSD:null, portraits:[null,null],
     bgm:{ title:"테마곡 이름", src:null } },
 
-  { id:2,  roll:"SW2.5",  icons:["⚔️","🗡️"],      name:"루카스",  ruby:"ルーカス", alias:"철벽의 방패",   aliasRuby:"てっぺきのたて",   aff:"모험자 길드",  tags:["성인","남성","전사"],
-    catchphrase:"동료를 지키는 것이 나의 검.",
-    quote:"강함이란 혼자 이기는 것이 아니다.\n동료와 함께 일어서는 것이다.",
-    info:{ 나이:"22세", 키:"182cm", 성별:"남성", 직업:"전사" }, scenario:null,
-    colors:["#4a6e8b","#8b6a2e","#2e6e4a","#6e2e2e"],
-    bio:"북부 출신의 젊은 전사. 동료를 위해서라면 망설임 없이 방패가 된다.",
-    born:"22세", height:"182cm", img:null, imgSD:null, portraits:[null],
-    bgm:null },
-
   { id:3,  roll:"CoC 7판", icons:["🎲","💊"],       name:"하나",    ruby:"ハナ",    alias:null,            aliasRuby:null,                aff:"대학교 의대",  tags:["성인","여성","의대생"],
     catchphrase:"살리는 것이 의사의 사명.",
     quote:"모르는 것이 있으면 공부하면 돼.\n그게 나한테는 버릇이 됐어.",
@@ -85,24 +77,6 @@ const pcs = [
     colors:["#8b7a2e","#4a8b8b","#8b4a2e","#2e4a2e"],
     bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",
     born:"19??.9.15", height:"168cm", img:null, imgSD:null, portraits:[null,null],
-    bgm:null },
-
-  { id:6,  roll:"SW2.5",  icons:["⚔️","🛡️"],     name:"클레어",  ruby:"クレア",  alias:"왕국의 검",     aliasRuby:"おうこくのけん",    aff:"왕국 기사단",  tags:["성인","여성","기사"],
-    catchphrase:"정의를 위해 이 검을 든다.",
-    quote:"규칙과 옳음이 다를 때,\n나는 항상 후자를 택한다.",
-    info:{ 나이:"20세", 키:"170cm", 성별:"여성", 직업:"기사" }, scenario:"시나리오명",
-    colors:["#8b7a4a","#4a6e8b","#8b4a4a","#4a4a6e"],
-    bio:"왕국 최연소 기사 중 한 명. 정의감이 넘치고 직선적인 성격이다.",
-    born:"20세", height:"170cm", img:null, imgSD:null, portraits:[null,null,null,null],
-    bgm:{ title:"테마곡 이름", src:null } },
-
-  { id:7,  roll:"인세인",  icons:["🌀"],            name:"미래",    ruby:"ミライ",  alias:null,            aliasRuby:null,                aff:"고등학교",     tags:["미성년","여성","고등학생"],
-    catchphrase:"보이는 것이 전부가 아니야.",
-    quote:"가끔 다른 게 보여.\n아무도 믿지 않겠지만.",
-    info:{ 나이:"17세", 키:"154cm", 성별:"여성", 직업:"고등학생" }, scenario:null,
-    colors:["#6e4a8b","#4a8b6e","#8b8b4a","#4a4a8b"],
-    bio:"남다른 감수성을 지닌 고등학생. 다른 사람이 보지 못하는 것을 볼 수 있다.",
-    born:"17세", height:"154cm", img:null, imgSD:null, portraits:[null],
     bgm:null },
 
   { id:8,  roll:"CoC 7판", icons:["🎲","📜"],      name:"노아",    ruby:"ノア",    alias:"이방인",        aliasRuby:"いほうじん",        aff:"해외 유학생",  tags:["성인","남성","유학생"],
@@ -357,173 +331,30 @@ function tabProfile(pc){
   return `<div class="tab-ph">프로필 내용이 없습니다.<br><span style="font-size:11px;color:var(--text-dim);">구글 시트에서 불러올 예정</span></div>`;
 }
 
-/* ── 시트: 룰별 분기 ── */
-function tabSheet(pc){
-  switch(pc.roll){
-    case 'CoC 7판': return sheetCoc(pc);
-    case 'SW2.5':   return sheetSw(pc);
-    case '인세인':  return sheetInsane(pc);
-    default: return `<div class="tab-ph">지원하지 않는 룰입니다.<br><span style="font-size:11px;color:var(--text-dim);">${pc.roll}</span></div>`;
-  }
-}
+/* ── 시트: SheetRegistry 로 동적 로드 ── */
+function tabSheet(pc) {
+  /* 이미 로드된 경우 즉시 렌더 */
+  const cached = SheetRegistry.render(pc.roll, pc);
+  if (cached !== null) return cached;
 
-/* ── CoC 7판 시트 ── */
-function sheetCoc(pc){
-  const stats = [
-    { name:'STR', val:50 }, { name:'CON', val:60 },
-    { name:'SIZ', val:65 }, { name:'DEX', val:70 },
-    { name:'APP', val:60 }, { name:'INT', val:75 },
-    { name:'POW', val:55 }, { name:'EDU', val:80 },
-  ];
-  const derived = [
-    { lbl:'HP', val:12 }, { lbl:'MP', val:11 },
-    { lbl:'SAN', val:55 }, { lbl:'LCK', val:60 },
-    { lbl:'DB', val:'+0' }, { lbl:'MOV', val:8 },
-  ];
-  const skills = [
-    { name:'도서관',   val:60 }, { name:'심리학', val:50 },
-    { name:'법률',     val:40 }, { name:'설득',   val:35 },
-    { name:'회피',     val:42 }, { name:'은닉',   val:30 },
-    { name:'응급치료', val:45 }, { name:'추적',   val:25 },
-  ];
-  return `<div class="sheet-coc">
-    <div class="sheet-note">※ 구글 시트 연동 후 자동으로 채워집니다 (현재 샘플)</div>
+  /* 미로드 → 비동기 로드 후 탭 내용 교체 */
+  SheetRegistry.load(pc.roll, function (success) {
+    const body = document.getElementById('tab-body');
+    if (!body) return;
+    if (success) {
+      body.innerHTML = SheetRegistry.render(pc.roll, pc)
+        || `<div class="tab-ph">시트 렌더링 오류</div>`;
+    } else {
+      const fn = SheetRegistry.filename(pc.roll) + '.js';
+      body.innerHTML = `
+        <div class="tab-ph">
+          「${pc.roll}」 시트 파일을 찾을 수 없습니다.<br>
+          <span style="font-size:11px;color:var(--text-dim);">sheets/${fn} 파일을 추가해 주세요.</span>
+        </div>`;
+    }
+  });
 
-    <div class="sheet-block">
-      <div class="sheet-ttl">능 력 치</div>
-      <div class="coc-stats">
-        ${stats.map(s=>`
-          <div class="coc-stat">
-            <div class="cs-name">${s.name}</div>
-            <div class="cs-val">${s.val}</div>
-            <div class="cs-sub">${Math.floor(s.val/2)} / ${Math.floor(s.val/5)}</div>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">파 생 스 탯</div>
-      <div class="coc-derived">
-        ${derived.map(d=>`
-          <div class="cd-item">
-            <span class="cd-lbl">${d.lbl}</span>
-            <span class="cd-val">${d.val}</span>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">기 술</div>
-      <div class="coc-skills">
-        ${skills.map(s=>`
-          <div class="coc-skill">
-            <span class="csk-name">${s.name}</span>
-            <span class="csk-bar"><span class="csk-fill" style="width:${s.val}%"></span></span>
-            <span class="csk-val">${s.val}</span>
-          </div>`).join('')}
-      </div>
-    </div>
-  </div>`;
-}
-
-/* ── SW 2.5 시트 ── */
-function sheetSw(pc){
-  const stats   = [{ name:'STR',val:12 },{ name:'DEX',val:11 },{ name:'POW',val:9 },{ name:'INT',val:10 }];
-  const details = [
-    { lbl:'클래스', val:'파이터' }, { lbl:'레벨', val:'3' },
-    { lbl:'종족',  val:'인간'   }, { lbl:'연령', val:'청년' },
-    { lbl:'HP',    val:'36'     }, { lbl:'MP',   val:'9'   },
-  ];
-  const abils = ['전사의 투지','연속 공격','방어 태세','일격 필살'];
-  const magic = [];
-  return `<div class="sheet-sw">
-    <div class="sheet-note">※ 구글 시트 연동 후 자동으로 채워집니다 (현재 샘플)</div>
-
-    <div class="sw-header">
-      <span class="sw-class">파이터 Lv.3</span>
-      <span class="sw-race">인간 · 청년</span>
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">능 력 치</div>
-      <div class="sw-stats">
-        ${stats.map(s=>`
-          <div class="sw-stat">
-            <div class="ss-name">${s.name}</div>
-            <div class="ss-val">${s.val}</div>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">기 본 정 보</div>
-      ${details.map(d=>`
-        <div class="sw-row">
-          <span class="sw-rlbl">${d.lbl}</span>
-          <span class="sw-rval">${d.val}</span>
-        </div>`).join('')}
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">전 투 특 기</div>
-      <div class="sw-abils">
-        ${abils.map(a=>`<span class="sw-abil">${a}</span>`).join('')}
-      </div>
-    </div>
-
-    ${magic.length ? `<div class="sheet-block"><div class="sheet-ttl">마 법</div>...</div>` : ''}
-  </div>`;
-}
-
-/* ── 인세인 시트 ── */
-function sheetInsane(pc){
-  const stats = [
-    { name:'무력',val:4 },{ name:'기민',val:5 },{ name:'집중',val:3 },
-    { name:'감지',val:4 },{ name:'기술',val:6 },{ name:'매력',val:5 },
-  ];
-  const fears    = ['어둠','밀실','죽음'];
-  const memories = [
-    '소중한 사람을 잃은 기억',
-    '이해할 수 없는 것을 목격한 날',
-  ];
-  const abils = ['직감','은신','간파'];
-  return `<div class="sheet-insane">
-    <div class="sheet-note">※ 구글 시트 연동 후 자동으로 채워집니다 (현재 샘플)</div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">능 력 치</div>
-      <div class="ins-stats">
-        ${stats.map(s=>`
-          <div class="ins-stat">
-            <div class="is-name">${s.name}</div>
-            <div class="is-val">${s.val}</div>
-          </div>`).join('')}
-      </div>
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">공 포</div>
-      <div class="ins-list">
-        ${fears.map(f=>`<span class="ins-fear">${f}</span>`).join('')}
-      </div>
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">기 억</div>
-      ${memories.map(m=>`
-        <div class="ins-mem-item">
-          <div class="ins-mem-label">기억</div>
-          <div>${m}</div>
-        </div>`).join('')}
-    </div>
-
-    <div class="sheet-block">
-      <div class="sheet-ttl">특 기</div>
-      <div class="ins-list">
-        ${abils.map(a=>`<span class="ins-abil">${a}</span>`).join('')}
-      </div>
-    </div>
-  </div>`;
+  return `<div class="tab-ph" style="color:var(--text-dim);">시트 로딩 중…</div>`;
 }
 
 function tabLog(pc){
