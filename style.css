@@ -144,17 +144,67 @@ button { font-family: var(--sans); cursor: pointer; }
 .avatar {
   width: 96px; height: 96px;
   border-radius: 50%;
-  border: 1.5px solid var(--border-md);
-  background: #1a2035;
+  border: 1px solid rgba(0,0,0,.2);
+  background: #f0f0f0;
   display: flex; align-items: center; justify-content: center;
   font-size: 36px; overflow: hidden; flex-shrink: 0;
+  /* 이중 링 효과 */
+  outline: 3px solid rgba(0,0,0,.06);
+  outline-offset: 3px;
 }
 .avatar img { width:100%; height:100%; object-fit:cover; }
+
 .nick {
   font-family: var(--serif);
   font-size: 24px; font-weight: 600;
   letter-spacing: 1px; text-align: center; color: var(--text);
 }
+/* 닉네임 아래 장식선 */
+.nick::after {
+  content: '';
+  display: block;
+  width: 36px; height: 1px;
+  background: rgba(0,0,0,.2);
+  margin: 7px auto 0;
+}
+
+/* ── 자기소개 하단 장식 구분선 ── */
+.owner-deco {
+  position: relative;
+  text-align: center;
+  margin: 0 0 28px;
+  height: 22px;
+  display: flex; align-items: center;
+}
+/* 상단 hairline */
+.owner-deco::before {
+  content: '';
+  position: absolute;
+  top: calc(50% - 3px); left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,0,0,.12) 12%,
+    rgba(0,0,0,.12) 88%, transparent 100%);
+}
+/* 하단 hairline */
+.owner-deco::after {
+  content: '';
+  position: absolute;
+  top: calc(50% + 3px); left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%, rgba(0,0,0,.08) 12%,
+    rgba(0,0,0,.08) 88%, transparent 100%);
+}
+.owner-deco-inner {
+  position: relative; z-index: 1;
+  background: #fff;
+  padding: 0 20px;
+  font-size: 9px; letter-spacing: 7px;
+  color: rgba(0,0,0,.22);
+  user-select: none;
+}
+
 .owner-links { display:flex; flex-direction:column; gap:5px; width:100%; }
 .olink {
   display: flex; align-items: center; gap: 5px;
@@ -208,6 +258,9 @@ button { font-family: var(--sans); cursor: pointer; }
   letter-spacing: 6px; color: var(--text);
   text-transform: uppercase;
 }
+/* 헤더 양쪽 다이아몬드 장식 */
+.pcs-head::before { content: '◆'; font-size:7px; opacity:.3; margin-right:14px; vertical-align:middle; letter-spacing:0; }
+.pcs-head::after  { content: '◆'; font-size:7px; opacity:.3; margin-left:14px;  vertical-align:middle; letter-spacing:0; }
 .ctrl-area { border-bottom: 1px solid var(--border); }
 .ctrl-row {
   display:flex; align-items:center;
@@ -312,6 +365,19 @@ button { font-family: var(--sans); cursor: pointer; }
   text-align: center;
   border-top: 1px solid var(--border);
   background: #ffffff;
+  position: relative;
+}
+/* 카드 이름 상단 중앙 작은 다이아 장식 */
+.pc-bot::before {
+  content: '◆';
+  position: absolute;
+  top: -5px; left: 50%;
+  transform: translateX(-50%);
+  font-size: 7px;
+  color: rgba(0,0,0,.25);
+  background: #fff;
+  padding: 0 3px;
+  line-height: 1;
 }
 .ruby    { display:block; font-size:9px; color:var(--text-dim); letter-spacing:1.5px; margin-bottom:2px; }
 .pc-name { font-family:var(--serif); font-size:18px; font-weight:600; color:var(--text); line-height:1.2; }
@@ -563,11 +629,13 @@ button { font-family: var(--sans); cursor: pointer; }
    PC DETAIL — TABS
 ════════════════════════════════════════════════ */
 .d-tabs {
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,.1);
+  border-radius: 4px;
   background: var(--bg-card);
   margin-top: 12px;
   margin-bottom: 16px;
+  /* 상단 이중선 장식 */
+  border-top: 3px double rgba(0,0,0,.15);
 }
 .tab-nav {
   display: flex;
