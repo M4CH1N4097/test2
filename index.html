@@ -6,6 +6,10 @@
 <title>TRPG 캐릭터 페이지</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
+<script src="https://www.youtube.com/iframe_api"></script>
+<script src="js/config.js"></script>
+<script src="js/api.js"></script>
+<script src="js/data.js"></script>
 </head>
 <body>
 
@@ -23,101 +27,35 @@
 </header>
 
 <main id="app"></main>
-<audio id="bgm-audio" loop></audio>
+<!-- YouTube player divs (hidden) -->
+<div id="yt-bgm" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;"></div>
+<div id="yt-pc"  style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px;"></div>
 
 <script src="js/sheets/registry.js"></script>
 <script>
-/* ══════════════════════════════════════════
-   DATA  —  이후 Google Sheets API 로 교체
-══════════════════════════════════════════ */
-const owner = {
-  nick:   "닉네임",
-  avatar: null,
-  tags:   ["CoC 7판", "SW2.5", "이런 느낌으로", "여러개 가능"],
-  bio:    "플레이어 소개 텍스트가 여기에 들어갑니다.\n너무 길지 않게 작성하는 것을 권장해요.\n취향이나 플레이 스타일을 자유롭게 적어 주세요.",
-  links:  [{ label:"성향표", url:"#" }, { label:"일정표", url:"#" }],
-  sns:    [{ label:"Twitter / X", url:"#" }, { label:"Misskey", url:"#" }, { label:"Discord", url:"#" }]
-};
-
-/*  icons: 1개면 썸네일 우상단 오버레이, 2~3개면 세로로 나열
-    colors: 캐릭터 컬러 팔레트 (최대 4개)
-    scenario: 시나리오명 (optional) */
-const pcs = [
-  { id:1,  roll:"CoC 7판", icons:["🎲"],            name:"아리아",  ruby:"アリア",  alias:"진홍의 탐정",   aliasRuby:"しんくのたんてい", aff:"탐정 사무소",  tags:["성인","여성","탐정"],
-    catchphrase:"진실은 언제나 하나.",
-    quote:"이 도시의 어둠을 걷는 것이 내 일이야.\n두렵지 않냐고?\n두렵지 않다면 거짓말이지.",
-    info:{ 나이:"2?세", 키:"163cm", 성별:"여성", 직업:"사립탐정" }, scenario:"시나리오명",
-    colors:["#8b4a6e","#2e4a8b","#c8a04a","#3a3a4e"],
-    bio:"오래된 도시의 뒷골목에서 활동하는 사립탐정. 날카로운 직관으로 사건을 해결한다.",
-    born:"19??.??.??", height:"163cm", img:null, imgSD:null, portraits:[null,null],
-    bgm:{ title:"테마곡 이름", src:null } },
-
-  { id:3,  roll:"CoC 7판", icons:["🎲","💊"],       name:"하나",    ruby:"ハナ",    alias:null,            aliasRuby:null,                aff:"대학교 의대",  tags:["성인","여성","의대생"],
-    catchphrase:"살리는 것이 의사의 사명.",
-    quote:"모르는 것이 있으면 공부하면 돼.\n그게 나한테는 버릇이 됐어.",
-    info:{ 나이:"2?세", 키:"157cm", 성별:"여성", 직업:"의대생" }, scenario:"시나리오명",
-    colors:["#4a8b6e","#8b4a4a","#6e4a8b","#4a6e4a"],
-    bio:"의대 3학년생. 평범해 보이지만 알 수 없는 사건에 몇 번이고 휘말리는 운명을 지닌다.",
-    born:"19??.4.7", height:"157cm", img:null, imgSD:null, portraits:[null,null,null],
-    bgm:{ title:"테마곡 이름", src:null } },
-
-  { id:4,  roll:"인세인",  icons:["🌀","🎭","⚡"],  name:"세이버",  ruby:"セイバー", alias:"그림자의 검",   aliasRuby:"かげのけん",        aff:"미상",         tags:["성별불명","비밀"],
-    catchphrase:"진실은 어둠 속에 있다.",
-    quote:"나는 무엇인가.\n그것조차 이제는 알 수 없다.",
-    info:{ 나이:"미상", 키:"미상", 성별:"불명", 직업:"미상" }, scenario:"시나리오명",
-    colors:["#2e2e3e","#6e2e6e","#2e6e6e","#8b8b2e"],
-    bio:"어둠 속에서 나타나 사건을 해결하고 사라지는 수수께끼의 인물.",
-    born:"미상", height:"미상", img:null, imgSD:null, portraits:[],
-    bgm:{ title:"테마곡 이름", src:null } },
-
-  { id:5,  roll:"CoC 7판", icons:["🎲"],            name:"레이나",  ruby:"レイナ",  alias:null,            aliasRuby:null,                aff:"무직",         tags:["성인","여성","백수"],
-    catchphrase:"정보는 힘이야.",
-    quote:"아무것도 안 하는 것처럼 보이지?\n그게 바로 나의 전략이야.",
-    info:{ 나이:"2?세", 키:"168cm", 성별:"여성", 직업:"무직" }, scenario:null,
-    colors:["#8b7a2e","#4a8b8b","#8b4a2e","#2e4a2e"],
-    bio:"특별한 직업은 없지만 인맥이 넓고 정보 수집에 뛰어나다.",
-    born:"19??.9.15", height:"168cm", img:null, imgSD:null, portraits:[null,null],
-    bgm:null },
-
-  { id:8,  roll:"CoC 7판", icons:["🎲","📜"],      name:"노아",    ruby:"ノア",    alias:"이방인",        aliasRuby:"いほうじん",        aff:"해외 유학생",  tags:["성인","남성","유학생"],
-    catchphrase:"이 나라는 아직도 불가사의해.",
-    quote:"고향에서 당연했던 것들이 여기선 통하지 않아.\n흥미롭지 않아?",
-    info:{ 나이:"2?세", 키:"175cm", 성별:"남성", 직업:"유학생" }, scenario:"시나리오명",
-    colors:["#2e6e8b","#8b6e2e","#4a8b4a","#6e2e4a"],
-    bio:"해외에서 온 유학생. 한국어는 유창하지만 가끔 묘한 발언을 해서 주변을 당황하게 한다.",
-    born:"19??.12.3", height:"175cm", img:null, imgSD:null, portraits:[null,null],
-    bgm:{ title:"테마곡 이름", src:null } },
-];
 /* ══════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════ */
 function linkSvg(){
   return `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>`;
 }
-
-/* 룰별 tag 색상 클래스 */
-function rollClass(roll){
-  if(roll.includes('CoC'))  return 'coc';
-  if(roll.includes('SW'))   return 'sw';
-  if(roll.includes('인세인')) return 'ins';
-  return 'gold';
-}
-
 function tagHtml(t, cls=''){ return `<span class="tag ${cls}">${t}</span>`; }
-
-function rollTagHtml(roll){ return tagHtml(roll, rollClass(roll)); }
+function rollTagHtml(ruleName){ return tagHtml(ruleName, 'gold'); }
 
 /* ══════════════════════════════════════════
    PC CARD
 ══════════════════════════════════════════ */
 function pcCardHtml(pc){
-  const icons = pc.icons.slice(0,3);
+  const icons = (pc.icons||[]).slice(0,3);
   return `
   <div class="pc-card" onclick="go('/pc/${pc.id}')"
        role="button" tabindex="0" aria-label="${pc.name} 프로필 보기">
     <div class="pc-thumb">
-      ${pc.img ? `<img src="${pc.img}" alt="${pc.name} 일러스트">` : `<span class="thumb-ph" aria-hidden="true">🎭</span>`}
-      <span class="pc-roll-lbl" aria-hidden="true">${pc.roll}</span>
+      ${pc.thumbnail
+        ? `<img src="${pc.thumbnail}" alt="${pc.name} 썸네일">`
+        : `<span class="thumb-ph" aria-hidden="true">🎭</span>`}
+      <span class="pc-roll-lbl" aria-hidden="true">${pc.ruleName}</span>
+      ${pc.passwordId>=1&&!isPasswordUnlocked(pc.passwordId)?`<span class="pc-lock-badge" aria-label="비밀번호 보호">🔒</span>`:''}
       <div class="pc-icons-ov" aria-hidden="true">
         ${icons.map(ic=>`<span class="pc-icon-txt">${ic}</span>`).join('')}
       </div>
@@ -140,13 +78,18 @@ function renderCards(list){
    HOME PAGE
 ══════════════════════════════════════════ */
 function pageHome(){
-  const bioHtml = owner.bio.replace(/\n/g,'<br>');
-  const rolls   = [...new Set(pcs.map(p=>p.roll))];
+  const owner = buildOwner();
+  const bioHtml = (owner.bio||'').replace(/\n/g,'<br>');
+  /* Onoff=true 인 룰만 필터 칩에 표시 */
+  const visibleRules = AppData.rules.filter(r=>r.onoff);
+
   return `
   <section class="owner">
     <div class="owner-l">
-      <div class="avatar">${owner.avatar ? `<img src="${owner.avatar}" alt="프사">` : '🎭'}</div>
-      <div class="nick">${owner.nick}</div>
+      <div class="avatar">
+        ${owner.avatar ? `<img src="${owner.avatar}" alt="프사">` : '🎭'}
+      </div>
+      <div class="nick">${owner.nick||'닉네임'}</div>
       <div class="owner-links">
         ${owner.links.map(l=>`<a href="${l.url}" class="olink">${linkSvg()} ${l.label}</a>`).join('')}
       </div>
@@ -169,13 +112,15 @@ function pageHome(){
   <section class="pcs">
     <div class="pcs-head">PC 리스트</div>
     <div class="ctrl-area">
+
       <div class="ctrl-row">
         <span class="ctrl-lbl">룰</span>
         <div class="chip-group" id="chip-rule">
-          <button class="chip on" data-val="전체">전체</button>
-          ${rolls.map(r=>`<button class="chip" data-val="${r}">${r}</button>`).join('')}
+          <button class="chip on" data-val="__ALL__">전체</button>
+          ${visibleRules.map(r=>`<button class="chip" data-val="${r.tabName}">${r.ruleName}</button>`).join('')}
         </div>
       </div>
+
       <div class="ctrl-row">
         <span class="ctrl-lbl">정렬</span>
         <div class="chip-group" id="chip-sort">
@@ -185,14 +130,20 @@ function pageHome(){
           <button class="chip" data-val="roll">룰이름순</button>
         </div>
       </div>
+
       <div class="ctrl-row">
         <span class="ctrl-lbl">필터</span>
         <div class="chip-group" id="chip-filter">
-          <button class="chip f" data-val="전신">전신 유무</button>
-          <button class="chip f" data-val="SD">SD 유무</button>
-          <button class="chip f" data-val="스탠딩">스탠딩 유무</button>
+          <button class="chip f" data-val="fav">즐겨찾기</button>
+          <button class="chip f" data-val="fb_o">전신 O</button>
+          <button class="chip f" data-val="fb_x">전신 X</button>
+          <button class="chip f" data-val="sd_o">SD O</button>
+          <button class="chip f" data-val="sd_x">SD X</button>
+          <button class="chip f" data-val="st_o">스탠딩 O</button>
+          <button class="chip f" data-val="st_x">스탠딩 X</button>
         </div>
       </div>
+
       <div class="ctrl-row">
         <span class="ctrl-lbl">검색</span>
         <div class="search-w">
@@ -200,118 +151,103 @@ function pageHome(){
           <span class="search-hint">캐릭터 정보 범위 내 검색</span>
         </div>
       </div>
-    </div>
+
     </div>
   </section>
 
   <div class="pc-grid-wrap">
-    <div class="pc-grid" id="pc-grid">${renderCards(pcs)}</div>
+    <div class="pc-grid" id="pc-grid">${renderCards(applyFilters())}</div>
   </div>`;
 }
 
 /* ══════════════════════════════════════════
-   DETAIL PAGE — HERO + TABS
+   DETAIL PAGE — hero HTML builder
 ══════════════════════════════════════════ */
-function pagePc(id){
-  const pc = pcs.find(p=>p.id===+id);
-  if(!pc) return `<div class="ph-page"><div class="ph-title">404</div><p class="ph-sub">캐릭터를 찾을 수 없습니다.</p><br><a href="#/" style="color:var(--gold);font-size:13px;">← 돌아가기</a></div>`;
+function buildHeroHtml(pc, hero, images){
+  /* 인적사항 배지: extractHero()가 "/" 구분 분리해서 배열로 줌 */
+  const badges     = hero.infoBadges  || [];
+  const quoteLines = hero.quoteLines  || [];
+  /* 이명 없으면 이름으로 fallback */
+  const aliasDisplay = hero.alias    || hero.name || pc.name;
+  const aliasRuby    = hero.aliasRuby || hero.nameRuby || pc.ruby;
 
-  const rc = rollClass(pc.roll);
-  const hasBgm = !!(pc.bgm?.src);
-  const bgmTitle = pc.bgm?.title ?? '등록된 곡 없음';
   return `
-  <a href="#/" class="detail-back">← PC 목록</a>
-
-  <!-- Character Music Player -->
-  <div class="pc-player">
-    <div class="pc-player-btns">
-      <button class="pc-player-btn" id="pc-prev" aria-label="이전">&#9664;&#9664;</button>
-      <button class="pc-player-btn pp" id="pc-play" aria-label="재생/일시정지" ${!hasBgm ? 'disabled style="opacity:.35;cursor:default;"' : ''}>&#9654;</button>
-      <button class="pc-player-btn" id="pc-next" aria-label="다음">&#9654;&#9654;</button>
-    </div>
-    <div class="pc-player-info">
-      <div class="pc-player-label">CHARACTER BGM</div>
-      <div class="pc-player-title" id="pc-player-title">${bgmTitle}</div>
-    </div>
-    <div class="pc-player-bar-wrap" id="pc-bar-wrap">
-      <div class="pc-player-bar-fill" id="pc-bar-fill"></div>
-    </div>
-    <div class="pc-player-vol">🔊<input type="range" min="0" max="100" value="70" id="pc-vol" aria-label="볼륨" /></div>
-  </div>
-
-  <!-- Hero: reference-sheet layout -->
   <div class="d-hero">
-
-    <!-- 전신 이미지 (bg) -->
     <div class="dh-fullbody">
-      ${pc.img
-        ? `<img src="${pc.img}" alt="${pc.name} 전신">`
+      ${images.fullbody
+        ? `<img src="${images.fullbody}" alt="${pc.name} 전신">`
         : `<span class="dh-fullbody-ph">🎭</span>`}
     </div>
-
-    <!-- 좌상단: 「alias」 -->
     <div class="dh-alias-block">
-      <div class="dh-alias-name">「${pc.alias || pc.name}」</div>
-      <div class="dh-alias-ruby">${pc.aliasRuby || pc.ruby}</div>
+      <div class="dh-alias-name">「${aliasDisplay}」</div>
+      <div class="dh-alias-ruby">${aliasRuby}</div>
     </div>
-
-    <!-- 우측: 인적사항 배지 -->
     <div class="dh-badges">
-      ${Object.entries(pc.info||{}).map(([,v])=>
-        `<span class="dh-badge">${v}</span>`).join('')}
+      ${badges.map(v=>`<span class="dh-badge">${v}</span>`).join('')}
     </div>
-
-    <!-- 좌측 열: 포트레이트 (화살표 + 슬롯) -->
     <div class="dh-portrait-col">
       <button class="dh-port-arrow" id="port-up" aria-label="위로">▲</button>
       <div class="dh-portraits" id="dh-portraits"></div>
       <button class="dh-port-arrow" id="port-dn" aria-label="아래로">▼</button>
     </div>
-
-    <!-- 우측 열: 컬러 팔레트 스와치 -->
     <div class="dh-swatches">
-      ${[...Array(4)].map((_,i)=>{
-        const c=(pc.colors||[])[i]||null;
-        return `<div class="dh-swatch" style="${c?`background:${c}`:''}" title="${c||''}"></div>`;
-      }).join('')}
+      ${[...Array(4)].map((_,i)=>`<div class="dh-swatch"></div>`).join('')}
     </div>
-
-    <!-- 중앙 오버레이: 한마디 (하이라이트) -->
-    ${pc.quote ? `<div class="dh-quotes">
-      ${pc.quote.split('\\n').slice(0,3).map(line=>
-        `<div class="dh-quote-line">${line}</div>`).join('')}
+    ${quoteLines.length ? `<div class="dh-quotes">
+      ${quoteLines.slice(0,3).map(l=>`<div class="dh-quote-line">${l}</div>`).join('')}
     </div>` : ''}
-
-    <!-- 우하단: 캐릭터 이름 -->
     <div class="dh-name-block">
-      <div class="dh-char-name">${pc.name}</div>
-      <div class="dh-char-ruby">${pc.ruby}</div>
+      <div class="dh-char-name">${hero.name||pc.name}</div>
+      <div class="dh-char-ruby">${hero.nameRuby||pc.ruby}</div>
     </div>
-
-    <!-- 우하단: SD 이미지 -->
     <div class="dh-sd">
-      ${pc.imgSD?`<img src="${pc.imgSD}" alt="SD">`:'🎨'}
+      ${images.imgSd?`<img src="${images.imgSd}" alt="SD">`:'🎨'}
     </div>
-
-    <!-- 좌하단: 룰 + 시나리오 + 캐치프레이즈 -->
     <div class="dh-bottom-l">
       <div class="dh-meta">
-        <span>${pc.roll}</span>
-        ${pc.scenario?`<span>${pc.scenario}</span>`:''}
+        <span>${pc.ruleName}</span>
+        ${(hero.aff||pc.aff)?`<span>${hero.aff||pc.aff}</span>`:''}
       </div>
-      <div class="dh-catchphrase">${pc.catchphrase||''}</div>
+      <div class="dh-catchphrase">${hero.catchphrase||''}</div>
     </div>
+  </div>`;
+}
 
+function buildPcPageHtml(pc, hero, images){
+  const hasBgm = !!(hero.bgm?.src);
+  const bgmTitle = hero.bgm?.title || '등록된 곡 없음';
+  const bgmSub   = hero.bgm?.composer ? ` — ${hero.bgm.composer}` : '';
+
+  return `
+  <a href="#/" class="detail-back">← PC 목록</a>
+
+  <div class="pc-player">
+    <div class="pc-player-btns">
+      <button class="pc-player-btn" id="pc-prev">&#9664;&#9664;</button>
+      <button class="pc-player-btn pp" id="pc-play"
+        ${!hasBgm?'disabled style="opacity:.35;cursor:default;"':''}
+      >&#9654;</button>
+      <button class="pc-player-btn" id="pc-next">&#9654;&#9654;</button>
+    </div>
+    <div class="pc-player-info">
+      <div class="pc-player-label">CHARACTER BGM</div>
+      <div class="pc-player-title">${bgmTitle}${bgmSub}</div>
+    </div>
+    <div class="pc-player-bar-wrap">
+      <div class="pc-player-bar-fill" id="pc-bar-fill"></div>
+    </div>
+    <div class="pc-player-vol">🔊<input type="range" min="0" max="100" value="70" id="pc-vol" /></div>
   </div>
 
-  <!-- Tabs -->
+  ${buildHeroHtml(pc, hero, images)}
+
   <div class="d-tabs">
     <div class="tab-nav">
       <button class="tab-btn on" data-tab="profile">프로필</button>
       <button class="tab-btn" data-tab="sheet">시트</button>
       <button class="tab-btn" data-tab="log">플레이 로그</button>
     </div>
-    <div class="tab-body" id="tab-body">${tabContent('profile', pc)}</div>
+    <div class="tab-body" id="tab-body">${tabProfile(pc)}</div>
   </div>`;
 }
 
@@ -322,56 +258,136 @@ function tabContent(tab, pc){
   switch(tab){
     case 'profile': return tabProfile(pc);
     case 'sheet':   return tabSheet(pc);
-    case 'log':     return tabLog(pc);
+    case 'log':     return tabLogPlaceholder(pc);
     default:        return tabProfile(pc);
   }
 }
 
+/* 프로필 탭: TabGroup=3 데이터를 DataType별로 렌더 */
 function tabProfile(pc){
-  return `<div class="tab-ph">프로필 내용이 없습니다.<br><span style="font-size:11px;color:var(--text-dim);">구글 시트에서 불러올 예정</span></div>`;
+  const DT = DATATYPE;
+  const g3 = pc.detail?.g3 || [];
+  if(!g3.length) return `<div class="tab-ph">프로필 내용이 없습니다.</div>`;
+
+  return g3.map(r => {
+    const dt = parseInt(r.DataType);
+    const esc = s => (s||'').replace(/\n/g,'<br>');
+
+    switch(dt){
+      /* ── Universal ── */
+      case DT.SECTION:
+        return `<div class="prof-section">${r.Data1}</div>`;
+      case DT.SUBSECTION:
+        return `<div class="prof-subsection">${r.Data1}</div>`;
+      case DT.CONTENT:
+        return `<div class="prof-content">${esc(r.Data1)}</div>`;
+
+      /* ── CoC: 공포증·집착증 ── */
+      case DT.COC_PHOBIA:
+        return `<div class="prof-block">
+          <div class="prof-block-ttl">공포증·집착증</div>
+          <div class="prof-content">${esc(r.Data1)}</div>
+        </div>`;
+
+      /* ── CoC: 신화서·주문·유물 / 기이한존재 / 장비 ── */
+      case DT.COC_MYTH:
+      case DT.COC_ENTITY:
+      case DT.COC_EQUIP: {
+        const label = dt===DT.COC_MYTH?'신화서·주문·유물':dt===DT.COC_ENTITY?'기이한 존재':'장비·소지품';
+        return `<div class="prof-list-item">
+          <span class="prof-item-name">${r.Data1}</span>
+          ${r.Data2?`<span class="prof-item-desc">${esc(r.Data2)}</span>`:''}
+        </div>`;
+      }
+
+      /* ── CoC: 현금·자산 ── */
+      case DT.COC_FINANCE:
+        return `<div class="prof-block">
+          <div class="prof-block-ttl">현금·자산</div>
+          <div style="display:flex;gap:16px;font-size:13px;">
+            ${r.Data1?`<div><div class="prof-label">소비수준</div><div>${r.Data1}</div></div>`:''}
+            ${r.Data2?`<div><div class="prof-label">현금</div><div>${r.Data2}</div></div>`:''}
+            ${r.Data3?`<div><div class="prof-label">자산</div><div>${r.Data3}</div></div>`:''}
+          </div>
+        </div>`;
+
+      /* ── CoC: 동료 탐사자들 ── */
+      case DT.COC_ALLY:
+        return `<div class="prof-list-item" style="align-items:center;gap:10px;">
+          ${r.Data4?`<img src="${r.Data4}" alt="" style="width:36px;height:36px;border-radius:3px;object-fit:cover;border:1px solid rgba(0,0,0,.1);">`:''}
+          <div>
+            <div class="prof-item-name">${r.Data1}</div>
+            <div class="prof-item-desc" style="font-size:11px;">${r.Data2||''}</div>
+          </div>
+          ${r.Data3?`<a href="${r.Data3}" target="_blank" style="margin-left:auto;font-size:11px;color:var(--text-dim);">↗</a>`:''}
+        </div>`;
+
+      /* ── inSANe: 공개사명 ── */
+      case DT.INS_MISSION:
+        return `<div class="prof-block">
+          <div class="prof-block-ttl">공개 사명</div>
+          <div class="prof-content">${esc(r.Data1)}</div>
+        </div>`;
+
+      /* ── inSANe: 비밀사명 ── */
+      case DT.INS_SECRET:
+        return `<div class="prof-block">
+          <div class="prof-block-ttl">비밀 사명</div>
+          <div class="prof-content">${esc(r.Data1)}</div>
+          ${r.Data2?`<div class="prof-label" style="margin-top:6px;">쇼크: ${r.Data2}</div>`:''}
+        </div>`;
+
+      /* ── 알 수 없는 DataType: 원시 렌더 ── */
+      default:
+        return r.Data1 ? `<div class="prof-content">${esc(r.Data1)}</div>` : '';
+    }
+  }).join('');
 }
 
-/* ── 시트: SheetRegistry 로 동적 로드 ── */
-function tabSheet(pc) {
-  /* 이미 로드된 경우 즉시 렌더 */
-  const cached = SheetRegistry.render(pc.roll, pc);
-  if (cached !== null) return cached;
+/* 시트 탭: TabGroup=4 데이터를 SheetRegistry로 전달 */
+function tabSheet(pc){
+  if(pc.detail) pc.sheetData = pc.detail.g4;
+  const cached = SheetRegistry.render(pc.rule, pc);
+  if(cached !== null) return cached;
 
-  /* 미로드 → 비동기 로드 후 탭 내용 교체 */
-  SheetRegistry.load(pc.roll, function (success) {
+  SheetRegistry.load(pc.rule, success=>{
     const body = document.getElementById('tab-body');
-    if (!body) return;
-    if (success) {
-      body.innerHTML = SheetRegistry.render(pc.roll, pc)
+    if(!body) return;
+    if(success){
+      if(pc.detail) pc.sheetData = pc.detail.g4;
+      body.innerHTML = SheetRegistry.render(pc.rule, pc)
         || `<div class="tab-ph">시트 렌더링 오류</div>`;
     } else {
-      const fn = SheetRegistry.filename(pc.roll) + '.js';
-      body.innerHTML = `
-        <div class="tab-ph">
-          「${pc.roll}」 시트 파일을 찾을 수 없습니다.<br>
-          <span style="font-size:11px;color:var(--text-dim);">sheets/${fn} 파일을 추가해 주세요.</span>
-        </div>`;
+      const fn = SheetRegistry.filename(pc.rule)+'.js';
+      body.innerHTML = `<div class="tab-ph">「${pc.rule}」 시트 파일 없음<br>
+        <span style="font-size:11px;color:var(--text-dim);">js/sheets/${fn}</span></div>`;
     }
   });
-
   return `<div class="tab-ph" style="color:var(--text-dim);">시트 로딩 중…</div>`;
 }
 
-function tabLog(pc){
-  const dummy = [
-    { date:'20??.??.??', title:'세션 제목 — 플레이 로그가 여기에 표시됩니다.' },
-    { date:'20??.??.??', title:'세션 제목 — 구글 시트에서 불러올 예정.' },
-  ];
-  return dummy.map(l=>`
-    <div class="log-item">
-      <div class="log-meta">${l.date}</div>
-      <div class="log-title">${l.title}</div>
-    </div>`).join('') + `<div class="tab-ph" style="padding-top:14px;">플레이 로그가 없습니다</div>`;
+/* 플레이 로그 탭: Log 탭 비동기 로드 */
+function tabLogPlaceholder(pc){
+  loadLogs(pc.rule, pc.charaId).then(logs=>{
+    const body = document.getElementById('tab-body');
+    if(!body) return;
+    if(!logs.length){
+      body.innerHTML = `<div class="tab-ph">플레이 로그가 없습니다.</div>`;
+      return;
+    }
+    body.innerHTML = logs.map(l=>`
+      <div class="log-item">
+        <div class="log-meta">${l.Date||''}</div>
+        <div class="log-title">${l.Title||l.Data1||''}</div>
+      </div>`).join('');
+  }).catch(()=>{
+    const body = document.getElementById('tab-body');
+    if(body) body.innerHTML = `<div class="tab-ph">로그 로드 실패</div>`;
+  });
+  return `<div class="tab-ph" style="color:var(--text-dim);">로그 로딩 중…</div>`;
 }
 
-/* ══════════════════════════════════════════
-   PLACEHOLDER PAGES
-══════════════════════════════════════════ */
+/* 플레이스홀더 페이지 */
 function pageNotice(){
   return `<div class="ph-page"><div class="ph-title">공 지 사 항</div><p class="ph-sub">준비 중입니다.</p></div>`;
 }
@@ -385,156 +401,162 @@ function pageUsers(){
 const state = { rules:new Set(), sort:'id-asc', filters:new Set(), q:'' };
 
 function applyFilters(){
-  let list = [...pcs];
-  if(state.rules.size > 0) list = list.filter(p=>state.rules.has(p.roll));
+  let list = [...AppData.pcs];
+
+  /* 룰 필터 */
+  if(state.rules.size>0) list = list.filter(p=>state.rules.has(p.rule));
+
+  /* 이미지 필터 */
+  if(state.filters.has('fav'))  list = list.filter(p=>p.favorit);
+  if(state.filters.has('fb_o')) list = list.filter(p=>p.hasFullbody===true);
+  if(state.filters.has('fb_x')) list = list.filter(p=>p.hasFullbody===false);
+  if(state.filters.has('sd_o')) list = list.filter(p=>p.hasSd===true);
+  if(state.filters.has('sd_x')) list = list.filter(p=>p.hasSd===false);
+  if(state.filters.has('st_o')) list = list.filter(p=>p.hasStanding===true);
+  if(state.filters.has('st_x')) list = list.filter(p=>p.hasStanding===false);
+
+  /* 검색 */
   if(state.q){
-    const q = state.q.toLowerCase();
-    list = list.filter(p=>
-      p.name.toLowerCase().includes(q) || p.aff.toLowerCase().includes(q) ||
-      p.roll.toLowerCase().includes(q) || p.ruby.toLowerCase().includes(q));
+    const q=state.q.toLowerCase();
+    list=list.filter(p=>
+      p.name.toLowerCase().includes(q)||
+      p.aff.toLowerCase().includes(q)||
+      p.ruleName.toLowerCase().includes(q)||
+      p.ruby.toLowerCase().includes(q));
   }
-  if(state.sort==='id-asc')  list.sort((a,b)=>a.id-b.id);
-  if(state.sort==='id-desc') list.sort((a,b)=>b.id-a.id);
+
+  /* 정렬 */
+  if(state.sort==='id-asc')  list.sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  if(state.sort==='id-desc') list.sort((a,b)=>String(b.id).localeCompare(String(a.id)));
   if(state.sort==='name')    list.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-  if(state.sort==='roll')    list.sort((a,b)=>a.roll.localeCompare(b.roll,'ko'));
+  if(state.sort==='roll')    list.sort((a,b)=>a.ruleName.localeCompare(b.ruleName,'ko'));
   return list;
 }
 
-function refreshGrid(){ const g=document.getElementById('pc-grid'); if(g) g.innerHTML=renderCards(applyFilters()); }
+function refreshGrid(){
+  const g=document.getElementById('pc-grid');
+  if(g) g.innerHTML=renderCards(applyFilters());
+}
 
 /* ══════════════════════════════════════════
-   EVENT BINDINGS
+   BIND HOME
 ══════════════════════════════════════════ */
 function bindHomeEvents(){
   /* 룰 복수 선택 */
   document.querySelectorAll('#chip-rule .chip').forEach(btn=>{
     btn.addEventListener('click',()=>{
-      const val=btn.dataset.val, all=document.querySelector('#chip-rule .chip[data-val="전체"]');
-      if(val==='전체'){
+      const val=btn.dataset.val;
+      const allBtn=document.querySelector('#chip-rule .chip[data-val="__ALL__"]');
+      if(val==='__ALL__'){
         state.rules.clear();
         document.querySelectorAll('#chip-rule .chip').forEach(b=>b.classList.remove('on'));
         btn.classList.add('on');
       } else {
-        all?.classList.remove('on');
+        allBtn?.classList.remove('on');
         btn.classList.toggle('on');
-        btn.classList.contains('on') ? state.rules.add(val) : state.rules.delete(val);
-        if(state.rules.size===0) all?.classList.add('on');
+        btn.classList.contains('on')?state.rules.add(val):state.rules.delete(val);
+        if(state.rules.size===0) allBtn?.classList.add('on');
       }
       refreshGrid();
     });
   });
-  /* 정렬 단일 선택 */
+  /* 정렬 단일 */
   document.querySelectorAll('#chip-sort .chip').forEach(btn=>{
     btn.addEventListener('click',()=>{
       document.querySelectorAll('#chip-sort .chip').forEach(b=>b.classList.remove('on'));
       btn.classList.add('on'); state.sort=btn.dataset.val; refreshGrid();
     });
   });
-  /* 필터 복수 선택 */
+  /* 필터 복수 */
   document.querySelectorAll('#chip-filter .chip').forEach(btn=>{
     btn.addEventListener('click',()=>{
       btn.classList.toggle('on');
-      btn.classList.contains('on') ? state.filters.add(btn.dataset.val) : state.filters.delete(btn.dataset.val);
+      btn.classList.contains('on')?state.filters.add(btn.dataset.val):state.filters.delete(btn.dataset.val);
       refreshGrid();
     });
   });
   /* 검색 */
   const si=document.getElementById('pc-search');
-  if(si){ si.value=state.q; si.addEventListener('input',e=>{ state.q=e.target.value.trim(); refreshGrid(); }); }
-  /* 카드 키보드 */
-  document.querySelectorAll('.pc-card').forEach(c=>c.addEventListener('keydown',e=>{ if(e.key==='Enter'||e.key===' ') c.click(); }));
+  if(si){ si.value=state.q; si.addEventListener('input',e=>{state.q=e.target.value.trim();refreshGrid();}); }
+  document.querySelectorAll('.pc-card').forEach(c=>c.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' ')c.click();}));
 }
 
-function bindPcEvents(id){
-  const pc=pcs.find(p=>p.id===+id); if(!pc) return;
-
-  /* ── 탭 전환 ── */
+/* ══════════════════════════════════════════
+   BIND PC EVENTS
+══════════════════════════════════════════ */
+async function bindPcEvents(pc){
+  /* 탭 */
   document.querySelectorAll('.tab-btn').forEach(btn=>{
     btn.addEventListener('click',()=>{
       document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('on'));
       btn.classList.add('on');
-      document.getElementById('tab-body').innerHTML = tabContent(btn.dataset.tab, pc);
+      document.getElementById('tab-body').innerHTML=tabContent(btn.dataset.tab,pc);
     });
   });
 
-  /* ── 포트레이트 페이지네이션 ── */
-  const PAGE = 4;
-  const portraits = pc.portraits || [];
-  let offset = 0;
+  /* 포트레이트 페이지네이션 */
+  const PAGE=4;
+  const portraits=pc.detail?extractImages(pc.detail.g2).portraits:[];
+  let offset=0;
 
   function renderPortraits(){
-    const wrap = document.getElementById('dh-portraits');
-    const upBtn = document.getElementById('port-up');
-    const dnBtn = document.getElementById('port-dn');
-    if(!wrap) return;
-
-    /* 슬롯 4개 렌더 */
-    wrap.innerHTML = [...Array(PAGE)].map((_,i)=>{
-      const src = portraits[offset + i] || null;
-      return `<div class="dh-portrait-slot">
-        ${src ? `<img src="${src}" alt="포트레이트${offset+i+1}">` : ''}
-      </div>`;
+    const wrap=document.getElementById('dh-portraits');
+    const up=document.getElementById('port-up');
+    const dn=document.getElementById('port-dn');
+    if(!wrap)return;
+    wrap.innerHTML=[...Array(PAGE)].map((_,i)=>{
+      const src=portraits[offset+i]||null;
+      return `<div class="dh-portrait-slot">${src?`<img src="${src}" alt="">`:''}`;
     }).join('');
-
-    /* 화살표 활성/비활성 */
-    if(upBtn) upBtn.disabled = offset <= 0;
-    if(dnBtn) dnBtn.disabled = offset + PAGE >= Math.max(portraits.length, PAGE);
+    if(up)up.disabled=offset<=0;
+    if(dn)dn.disabled=offset+PAGE>=Math.max(portraits.length,PAGE);
   }
-
   renderPortraits();
+  document.getElementById('port-up')?.addEventListener('click',()=>{if(offset>0){offset--;renderPortraits();}});
+  document.getElementById('port-dn')?.addEventListener('click',()=>{if(offset+PAGE<Math.max(portraits.length,PAGE)){offset++;renderPortraits();}});
 
-  document.getElementById('port-up')?.addEventListener('click', ()=>{
-    if(offset > 0){ offset--; renderPortraits(); }
-  });
-  document.getElementById('port-dn')?.addEventListener('click', ()=>{
-    if(offset + PAGE < Math.max(portraits.length, PAGE)){ offset++; renderPortraits(); }
-  });
-
-  /* ── 캐릭터 BGM 플레이어 ── */
+  /* 캐릭터 BGM (YouTube) */
+  const bgm = pc.detail ? extractHero(pc.detail.g1).bgm : null;
   const playBtn  = document.getElementById('pc-play');
   const barFill  = document.getElementById('pc-bar-fill');
   const volInput = document.getElementById('pc-vol');
-  if(!playBtn) return;
+  if(!playBtn||!bgm?.src) return;
 
-  /* 전용 audio 엘리먼트 (전역 BGM과 별개) */
-  let pcAudio = document.getElementById('pc-audio');
-  if(!pcAudio){
-    pcAudio = document.createElement('audio');
-    pcAudio.id = 'pc-audio';
-    document.body.appendChild(pcAudio);
-  }
+  const ytId = extractYtId(bgm.src);
+  let pcYt=null, pcPlaying=false;
 
-  if(pc.bgm?.src){
-    pcAudio.src = pc.bgm.src;
-    pcAudio.volume = (volInput?.value ?? 70) / 100;
-  }
-
-  let playing = false;
-
-  playBtn.addEventListener('click', ()=>{
-    if(!pc.bgm?.src) return;
-    if(playing){ pcAudio.pause(); playBtn.innerHTML='&#9654;'; }
-    else        { pcAudio.play().catch(()=>{}); playBtn.innerHTML='&#9646;&#9646;'; }
-    playing = !playing;
+  playBtn.addEventListener('click',()=>{
+    whenYtReady(()=>{
+      if(!pcYt){
+        pcYt=new YT.Player('yt-pc',{
+          videoId:ytId,
+          playerVars:{autoplay:1,playsinline:1},
+          events:{
+            onStateChange(e){
+              pcPlaying=(e.data===YT.PlayerState.PLAYING);
+              playBtn.innerHTML=pcPlaying?'&#9646;&#9646;':'&#9654;';
+            }
+          }
+        });
+        return;
+      }
+      pcPlaying?pcYt.pauseVideo():pcYt.playVideo();
+    });
   });
 
-  pcAudio.addEventListener('timeupdate', ()=>{
-    if(pcAudio.duration && barFill)
-      barFill.style.width = (pcAudio.currentTime / pcAudio.duration * 100) + '%';
-  });
+  volInput?.addEventListener('input',e=>pcYt?.setVolume(+e.target.value));
 
-  pcAudio.addEventListener('ended', ()=>{
-    playing = false;
-    if(playBtn) playBtn.innerHTML = '&#9654;';
-  });
+  const progTimer=setInterval(()=>{
+    if(pcYt&&pcPlaying&&barFill&&pcYt.getDuration){
+      const t=pcYt.getCurrentTime(),d=pcYt.getDuration();
+      if(d>0)barFill.style.width=(t/d*100)+'%';
+    }
+  },500);
 
-  volInput?.addEventListener('input', e=>{
-    pcAudio.volume = e.target.value / 100;
-  });
-
-  /* 페이지 이동 시 재생 중단 */
-  const stopOnLeave = ()=>{ pcAudio.pause(); playing=false; };
-  window.addEventListener('hashchange', stopOnLeave, { once: true });
+  window.addEventListener('hashchange',()=>{
+    clearInterval(progTimer);
+    pcYt?.stopVideo();
+  },{once:true});
 }
 
 /* ══════════════════════════════════════════
@@ -542,36 +564,177 @@ function bindPcEvents(id){
 ══════════════════════════════════════════ */
 function go(path){ location.hash='#'+path; }
 
-function render(){
+async function render(){
   const hash=location.hash.replace('#','')||'/';
   const app=document.getElementById('app');
-  const pcMatch=hash.match(/^\/pc\/(\d+)$/);
-  if(pcMatch){ app.innerHTML=pagePc(pcMatch[1]); bindPcEvents(pcMatch[1]); return; }
+  if(!AppData.ready) return;
+
+  /* PC 상세 */
+  const pcMatch=hash.match(/^\/pc\/(.+)$/);
+  if(pcMatch){
+    const id=decodeURIComponent(pcMatch[1]);
+    const pc=AppData.pcs.find(p=>p.id===id);
+    if(!pc){
+      app.innerHTML=`<div class="ph-page"><div class="ph-title">404</div><p class="ph-sub">캐릭터를 찾을 수 없습니다.</p><br><a href="#/" style="font-size:13px;">← 돌아가기</a></div>`;
+      return;
+    }
+
+    /* ── 비밀번호 보호 확인 ── */
+    if(!isPasswordUnlocked(pc.passwordId)){
+      showCharPassword(pc);
+      return;
+    }
+
+    /* ── 데이터 로드 ── */
+    app.innerHTML=`<div class="ph-page"><div class="ph-title" style="font-size:18px;letter-spacing:2px;">로딩 중…</div></div>`;
+    try{
+      await loadCharaDetail(pc);
+      const hero   = extractHero(pc.detail.g1);
+      const images = extractImages(pc.detail.g2);
+      app.innerHTML = buildPcPageHtml(pc, hero, images);
+      await bindPcEvents(pc);
+    }catch(e){
+      app.innerHTML=`<div class="ph-page"><div class="ph-title">로드 실패</div><p class="ph-sub">${e.message}</p></div>`;
+    }
+    return;
+  }
+
   const pages={'/' :pageHome,'/notice':pageNotice,'/users':pageUsers};
   app.innerHTML=(pages[hash]||pageHome)();
   if(hash==='/') bindHomeEvents();
 }
 
 window.addEventListener('hashchange',render);
-window.addEventListener('load',render);
 
 /* ══════════════════════════════════════════
-   BGM
+   YOUTUBE IFrame API
 ══════════════════════════════════════════ */
-const audio=document.getElementById('bgm-audio');
-const playBtn=document.getElementById('bgm-play');
-const prog=document.getElementById('bgm-prog');
-let playing=false;
+let _ytReady=false;
+let _ytQueue=[];
+function onYouTubeIframeAPIReady(){ _ytReady=true; _ytQueue.forEach(fn=>fn()); _ytQueue=[]; }
+function whenYtReady(fn){ _ytReady?fn():_ytQueue.push(fn); }
 
-playBtn.addEventListener('click',()=>{
-  if(!audio.src||audio.src===window.location.href) return;
-  if(playing){ audio.pause(); playBtn.innerHTML='&#9654;'; }
-  else        { audio.play().catch(()=>{}); playBtn.innerHTML='&#9646;&#9646;'; }
-  playing=!playing;
-});
-document.getElementById('bgm-vol-input').addEventListener('input',e=>{ audio.volume=e.target.value/100; });
-audio.addEventListener('timeupdate',()=>{ if(audio.duration) prog.style.width=(audio.currentTime/audio.duration*100)+'%'; });
-audio.addEventListener('ended',()=>{ playing=false; playBtn.innerHTML='&#9654;'; });
+/* 전역 BGM YouTube 플레이어 */
+let bgmYt=null, bgmPlaying=false;
+
+function initGlobalBgm(ownerBgm){
+  const titleEl=document.getElementById('bgm-title');
+  const playBtn=document.getElementById('bgm-play');
+  const prog   =document.getElementById('bgm-prog');
+  const volIn  =document.getElementById('bgm-vol-input');
+  if(!ownerBgm?.src) return;
+
+  const ytId=extractYtId(ownerBgm.src);
+  if(titleEl) titleEl.textContent=ownerBgm.title+(ownerBgm.composer?` — ${ownerBgm.composer}`:'');
+
+  playBtn.addEventListener('click',()=>{
+    whenYtReady(()=>{
+      if(!bgmYt){
+        bgmYt=new YT.Player('yt-bgm',{
+          videoId:ytId,
+          playerVars:{autoplay:1,loop:1,playlist:ytId,playsinline:1},
+          events:{
+            onReady(e){ e.target.setVolume(+volIn.value); },
+            onStateChange(e){
+              bgmPlaying=(e.data===YT.PlayerState.PLAYING);
+              playBtn.innerHTML=bgmPlaying?'&#9646;&#9646;':'&#9654;';
+            }
+          }
+        });
+        return;
+      }
+      bgmPlaying?bgmYt.pauseVideo():bgmYt.playVideo();
+    });
+  });
+
+  volIn?.addEventListener('input',e=>bgmYt?.setVolume(+e.target.value));
+  setInterval(()=>{
+    if(bgmYt&&bgmPlaying&&prog&&bgmYt.getDuration){
+      const t=bgmYt.getCurrentTime(),d=bgmYt.getDuration();
+      if(d>0)prog.style.width=(t/d*100)+'%';
+    }
+  },500);
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+/* ══════════════════════════════════════════
+   캐릭터 비밀번호 화면
+══════════════════════════════════════════ */
+function showCharPassword(pc){
+  const app=document.getElementById('app');
+  app.innerHTML=`
+  <a href="#/" class="detail-back">← PC 목록</a>
+  <div class="login-wrap">
+    <div class="login-box">
+      <div class="login-title">${pc.name}</div>
+      <div class="login-sub">비밀번호가 설정된 캐릭터입니다</div>
+      <div class="login-hint" id="char-hint"></div>
+      <input type="password" class="login-input" id="char-pw"
+        placeholder="···" autocomplete="off" />
+      <button class="login-btn" id="char-pw-btn">확 &nbsp; 인</button>
+      <div class="login-err" id="char-pw-err"></div>
+    </div>
+  </div>`;
+
+  /* 힌트 비동기 로드 */
+  fetchCharHint(pc.passwordId).then(hint => {
+    const el = document.getElementById('char-hint');
+    if (el && hint) el.textContent = hint;
+  });
+
+  const pw  = document.getElementById('char-pw');
+  const btn = document.getElementById('char-pw-btn');
+  const err = document.getElementById('char-pw-err');
+
+  async function tryUnlock(){
+    btn.disabled=true; btn.textContent='확인 중…'; err.textContent='';
+    try{
+      await verifyCharPassword(pc.passwordId, pw.value);
+      unlockPassword(pc.passwordId);
+      await render();
+    }catch(e){
+      err.textContent=e.message;
+      btn.disabled=false; btn.textContent='확 　 인';
+      pw.select();
+    }
+  }
+  btn.addEventListener('click', tryUnlock);
+  pw.addEventListener('keydown', e=>{ if(e.key==='Enter') tryUnlock(); });
+  setTimeout(()=>pw.focus(), 50);
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+async function init(){
+  const app=document.getElementById('app');
+
+  if(!SHEET_CONFIG.scriptUrl){
+    app.innerHTML=`<div class="ph-page">
+      <div class="ph-title">설정 필요</div>
+      <p class="ph-sub">js/config.js 의 scriptUrl 을 입력하세요.</p>
+    </div>`;
+    return;
+  }
+
+  app.innerHTML=`<div class="ph-page"><div class="ph-title" style="font-size:18px;letter-spacing:2px;">로딩 중…</div></div>`;
+
+  try{
+    await loadAppData();
+    const owner=buildOwner();
+    initGlobalBgm(owner.bgm);
+    await render();
+  }catch(e){
+    app.innerHTML=`<div class="ph-page">
+      <div class="ph-title">로드 실패</div>
+      <p class="ph-sub">${e.message}</p>
+    </div>`;
+  }
+}
+
+window.addEventListener('load', init);
 </script>
 </body>
 </html>
