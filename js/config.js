@@ -3,7 +3,7 @@
    scriptUrl: Apps Script 배포 URL 입력
 ════════════════════════════════════════════════ */
 const SHEET_CONFIG = {
-  scriptUrl: '',  // ← Apps Script 배포 URL 입력
+  scriptUrl: 'https://script.google.com/macros/s/AKfycbzPyDAaXsjkov9HS-FwUeGtkyMTgowAsrTNJRyJMWfk7tSALrxMHDHKx0ijQTQkxoSdEg/exec',  // ← Apps Script 배포 URL 입력
 };
 
 /* DataType ID → 이름 매핑
