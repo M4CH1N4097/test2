@@ -93,12 +93,27 @@ function unlockPassword(passwordId) {
   sessionStorage.setItem(`pw_${passwordId}`, 'ok');
 }
 
-/* ── 파싱 유틸 ── */
-function parseSheetRows(rows) {
-  if (!rows || rows.length < 2) return [];
-  const headers = rows[1] || [];
+/* ── 파싱 유틸 ─────────────────────────────────
+   headerKey: 이 값이 있는 행을 헤더로 자동 탐지
+   (gviz가 빈 행을 건너뛰어 rows[0]이 헤더인 경우 대응) */
+function parseSheetRows(rows, headerKey) {
+  if (!rows || rows.length < 1) return [];
+
+  /* 헤더 행 탐지: headerKey 셀이 있는 행을 찾음 (최대 5행 스캔) */
+  let headerIdx = Math.min(1, rows.length - 1); // 기본 index 1
+  if (headerKey) {
+    const needle = headerKey.toLowerCase();
+    for (let i = 0; i < Math.min(rows.length, 5); i++) {
+      if ((rows[i] || []).some(h => h?.toString().trim().toLowerCase() === needle)) {
+        headerIdx = i;
+        break;
+      }
+    }
+  }
+
+  const headers = rows[headerIdx] || [];
   const result  = [];
-  for (let i = 2; i < rows.length; i++) {
+  for (let i = headerIdx + 1; i < rows.length; i++) {
     const row = rows[i] || [];
     const obj = {};
     let hasData = false;
