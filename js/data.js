@@ -77,6 +77,7 @@ function _parseFullIndex(rows) {
         favorit:     r.Favorit?.toUpperCase() === 'TRUE',
         sheetId:     r.SheetId    || '',
         charaId:     r.CharaId    || '',
+        passwordId:  parseInt(r.PasswordId) || 0,
         // 이미지 보유 여부 (룰 탭 로드 후 채워짐)
         hasFullbody: null,
         hasSd:       null,
@@ -112,9 +113,9 @@ async function loadCharaDetail(pc) {
   const g4 = group.filter(r => r.TabGroup === '4');
 
   // 이미지 플래그 업데이트
-  pc.hasFullbody = g2.some(r => r.DataType === String(DATATYPE.FULLBODY));
-  pc.hasSd       = g2.some(r => r.DataType === String(DATATYPE.SD));
-  pc.hasStanding = g2.some(r => r.DataType === String(DATATYPE.STANDING));
+  pc.hasFullbody = g2.some(r => DATATYPE[r.DataType] === 'FULLBODY');
+  pc.hasSd       = g2.some(r => DATATYPE[r.DataType] === 'SD');
+  pc.hasStanding = g2.some(r => DATATYPE[r.DataType] === 'STANDING');
 
   pc.detail = { g1, g2, g3, g4 };
   return pc.detail;
@@ -138,16 +139,16 @@ async function loadLogs(rule, charaId) {
    DataType 매핑: js/config.js 의 DATATYPE 객체 참조
 ──────────────────────────────────────────────── */
 function extractHero(g1) {
-  const DT  = DATATYPE;
-  const one = (dt) => g1.find(r => r.DataType === String(dt));
+  /* DATATYPE[r.DataType] → 이름 문자열로 비교 */
+  const one = (name) => g1.find(r => DATATYPE[r.DataType] === name);
 
-  const nameRow  = one(DT.NAME);
-  const aliasRow = one(DT.ALIAS);
-  const catchRow = one(DT.CATCHPHRASE);
-  const quoteRow = one(DT.QUOTE);
-  const bgmRow   = one(DT.BGM);
-  const affRow   = one(DT.AFF);
-  const infoRow  = one(DT.INFO);
+  const nameRow  = one('NAME');
+  const aliasRow = one('ALIAS');
+  const catchRow = one('CATCHPHRASE');
+  const quoteRow = one('QUOTE');
+  const bgmRow   = one('BGM');
+  const affRow   = one('AFF');
+  const infoRow  = one('INFO');
 
   /* 인적사항: "나이 / 성별 / 키" 형태 → 배열로 분리 */
   const infoBadges = infoRow?.Data1
@@ -180,21 +181,20 @@ function extractHero(g1) {
    헬퍼: TabGroup=2 → 이미지 추출
 ──────────────────────────────────────────────── */
 function extractImages(g2) {
-  const DT   = DATATYPE;
-  const one  = (dt) => g2.find(r  => r.DataType === String(dt))?.Data1 || null;
-  const many = (dt) => g2.filter(r => r.DataType === String(dt) && r.Data1)
-                          .map(r => ({ url: r.Data1, name: r.Data2 || '', credit: r.Data3 || '' }));
+  const one  = (name) => g2.find(r  => DATATYPE[r.DataType] === name)?.Data1 || null;
+  const many = (name) => g2.filter(r => DATATYPE[r.DataType] === name && r.Data1)
+                           .map(r => ({ url: r.Data1, name: r.Data2 || '', credit: r.Data3 || '' }));
 
   /* 포트레이트 슬롯 = 스탠딩 이미지 우선, 없으면 추가 이미지 */
-  const standings = many(DT.STANDING);
-  const extras    = many(DT.EXTRA_IMG);
+  const standings = many('STANDING');
+  const extras    = many('EXTRA_IMG');
   const portraits = standings.length ? standings.map(s => s.url) : extras.map(e => e.url);
 
   return {
-    thumbnail: one(DT.THUMBNAIL),
-    fullbody:  one(DT.FULLBODY),
-    imgSd:     one(DT.SD),
-    bg:        one(DT.BG),
+    thumbnail: one('THUMBNAIL'),
+    fullbody:  one('FULLBODY'),
+    imgSd:     one('SD'),
+    bg:        one('BG'),
     standings,
     extras,
     portraits,

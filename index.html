@@ -265,35 +265,34 @@ function tabContent(tab, pc){
 
 /* 프로필 탭: TabGroup=3 데이터를 DataType별로 렌더 */
 function tabProfile(pc){
-  const DT = DATATYPE;
   const g3 = pc.detail?.g3 || [];
   if(!g3.length) return `<div class="tab-ph">프로필 내용이 없습니다.</div>`;
 
   return g3.map(r => {
-    const dt = parseInt(r.DataType);
+    const dt  = DATATYPE[r.DataType]; /* 숫자 ID → 이름 문자열 */
     const esc = s => (s||'').replace(/\n/g,'<br>');
 
     switch(dt){
       /* ── Universal ── */
-      case DT.SECTION:
+      case 'SECTION':
         return `<div class="prof-section">${r.Data1}</div>`;
-      case DT.SUBSECTION:
+      case 'SUBSECTION':
         return `<div class="prof-subsection">${r.Data1}</div>`;
-      case DT.CONTENT:
+      case 'CONTENT':
         return `<div class="prof-content">${esc(r.Data1)}</div>`;
 
       /* ── CoC: 공포증·집착증 ── */
-      case DT.COC_PHOBIA:
+      case 'COC_PHOBIA':
         return `<div class="prof-block">
           <div class="prof-block-ttl">공포증·집착증</div>
           <div class="prof-content">${esc(r.Data1)}</div>
         </div>`;
 
       /* ── CoC: 신화서·주문·유물 / 기이한존재 / 장비 ── */
-      case DT.COC_MYTH:
-      case DT.COC_ENTITY:
-      case DT.COC_EQUIP: {
-        const label = dt===DT.COC_MYTH?'신화서·주문·유물':dt===DT.COC_ENTITY?'기이한 존재':'장비·소지품';
+      case 'COC_MYTH':
+      case 'COC_ENTITY':
+      case 'COC_EQUIP': {
+        const label = dt==='COC_MYTH'?'신화서·주문·유물':dt==='COC_ENTITY'?'기이한 존재':'장비·소지품';
         return `<div class="prof-list-item">
           <span class="prof-item-name">${r.Data1}</span>
           ${r.Data2?`<span class="prof-item-desc">${esc(r.Data2)}</span>`:''}
@@ -301,7 +300,7 @@ function tabProfile(pc){
       }
 
       /* ── CoC: 현금·자산 ── */
-      case DT.COC_FINANCE:
+      case 'COC_FINANCE':
         return `<div class="prof-block">
           <div class="prof-block-ttl">현금·자산</div>
           <div style="display:flex;gap:16px;font-size:13px;">
@@ -312,7 +311,7 @@ function tabProfile(pc){
         </div>`;
 
       /* ── CoC: 동료 탐사자들 ── */
-      case DT.COC_ALLY:
+      case 'COC_ALLY':
         return `<div class="prof-list-item" style="align-items:center;gap:10px;">
           ${r.Data4?`<img src="${r.Data4}" alt="" style="width:36px;height:36px;border-radius:3px;object-fit:cover;border:1px solid rgba(0,0,0,.1);">`:''}
           <div>
@@ -323,14 +322,14 @@ function tabProfile(pc){
         </div>`;
 
       /* ── inSANe: 공개사명 ── */
-      case DT.INS_MISSION:
+      case 'INS_MISSION':
         return `<div class="prof-block">
           <div class="prof-block-ttl">공개 사명</div>
           <div class="prof-content">${esc(r.Data1)}</div>
         </div>`;
 
       /* ── inSANe: 비밀사명 ── */
-      case DT.INS_SECRET:
+      case 'INS_SECRET':
         return `<div class="prof-block">
           <div class="prof-block-ttl">비밀 사명</div>
           <div class="prof-content">${esc(r.Data1)}</div>
