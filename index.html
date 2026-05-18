@@ -79,7 +79,6 @@ function renderCards(list){
 ══════════════════════════════════════════ */
 function pageHome(){
   const owner = buildOwner();
-  const bioHtml = (owner.bio||'').replace(/\n/g,'<br>');
   /* Onoff=true 인 룰만 필터 칩에 표시 */
   const visibleRules = AppData.rules.filter(r=>r.onoff);
 
@@ -98,7 +97,11 @@ function pageHome(){
       <div class="row-tags">
         ${owner.tags.map((t,i)=>tagHtml(t,i<2?'gold':'blue')).join('')}
       </div>
-      <div class="bio">${bioHtml}</div>
+      <div class="bio">${
+        AppData.bioHtml
+          ? AppData.bioHtml
+          : (owner.bio||'').replace(/\n/g,'<br>')
+      }</div>
       <div class="row-sns">
         ${owner.sns.map(s=>`<a href="${s.url}" class="sns-a">${linkSvg()} ${s.label}</a>`).join('')}
       </div>

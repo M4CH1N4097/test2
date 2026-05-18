@@ -3,7 +3,8 @@
    scriptUrl: Apps Script 배포 URL 입력
 ════════════════════════════════════════════════ */
 const SHEET_CONFIG = {
-  scriptUrl: 'https://script.google.com/macros/s/AKfycbzPyDAaXsjkov9HS-FwUeGtkyMTgowAsrTNJRyJMWfk7tSALrxMHDHKx0ijQTQkxoSdEg/exec',  // ← Apps Script 배포 URL 입력
+  sheetId:   '10QdVQYawcoEO6Z5UkERpxnMBxmAs5vN58Cw_QJkZa6o', // 시트 ID
+  scriptUrl: 'https://script.google.com/macros/s/AKfycbzKGb2eAnErizRM8_kmNmjWugNC68-cF-accltcmOWpaVSSv4XRLHUQXLXCjDzl77uOOw/exec',  // ← Apps Script 배포 URL (비밀번호 검증 전용)
 };
 
 /* DataType ID → 이름 매핑

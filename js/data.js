@@ -9,6 +9,7 @@ const AppData = {
   pcs:        [],      // FullIndex 파싱 결과
   ruleCache:  {},      // 룰 탭 캐시 { tabName: [records] }
   logCache:   null,    // Log 탭 캐시
+  bioHtml:    null,    // ShortIntroduce 서식 HTML (비동기 로드)
 };
 
 /* ────────────────────────────────────────────────
@@ -22,37 +23,73 @@ async function loadAppData() {
   _parseSetting(settingRows);
   _parseFullIndex(indexRows);
   AppData.ready = true;
+
+  /* 서식 있는 소개글 비동기 로드 (scriptUrl 있을 때만) */
+  if (SHEET_CONFIG.scriptUrl) {
+    _loadBioHtml().catch(() => {});
+  }
+}
+
+async function _loadBioHtml() {
+  const res  = await fetch(SHEET_CONFIG.scriptUrl, {
+    method: 'POST',
+    body:   JSON.stringify({ action: 'getRichText', fieldName: 'ShortIntroduce' }),
+  });
+  const data = await res.json();
+  if (!data.html) return;
+  AppData.bioHtml = data.html;
+  /* 이미 렌더링된 경우 즉시 업데이트 */
+  const el = document.querySelector('.bio');
+  if (el) el.innerHTML = data.html;
 }
 
 /* ────────────────────────────────────────────────
    Setting 탭 파싱
 ──────────────────────────────────────────────── */
 function _parseSetting(rows) {
+  /* parseSheetRows 호출 전, 컬럼명 트리밍 보정 */
+  if (rows && rows[1]) {
+    rows[1] = rows[1].map(h => (h || '').toString().trim());
+  }
   const records = parseSheetRows(rows);
 
   const user  = {};
   const rules = [];
 
   records.forEach(r => {
-    // UserData 계열
-    if (r.UserDataName) {
-      user[r.UserDataName] = {
-        title: r.UserDataTitle || r.UserDataName,
-        value: r.UserData      || '',
+    /* UserData 계열 — 대소문자 무관하게 키를 찾아 처리 */
+    const nameKey  = Object.keys(r).find(k => k.toLowerCase() === 'userdataname');
+    const titleKey = Object.keys(r).find(k => k.toLowerCase() === 'userdatatitle');
+    const valKey   = Object.keys(r).find(k => k.toLowerCase() === 'userdata');
+    const tabKey   = Object.keys(r).find(k => k.toLowerCase() === 'tabname');
+    const ruleKey  = Object.keys(r).find(k => k.toLowerCase() === 'rulename');
+    const onKey    = Object.keys(r).find(k => k.toLowerCase() === 'onoff');
+
+    const uName = nameKey ? r[nameKey].trim() : '';
+    if (uName) {
+      user[uName] = {
+        title: titleKey && r[titleKey] ? r[titleKey] : uName,
+        value: valKey   ? r[valKey]    : '',
       };
     }
-    // 룰 계열
-    if (r.TabName) {
+
+    const tName = tabKey ? r[tabKey].trim() : '';
+    if (tName) {
       rules.push({
-        tabName:  r.TabName,
-        ruleName: r.RuleName || r.TabName,
-        onoff:    r.Onoff?.toUpperCase() === 'TRUE',
+        tabName:  tName,
+        ruleName: ruleKey && r[ruleKey] ? r[ruleKey] : tName,
+        onoff:    onKey ? r[onKey]?.toUpperCase() === 'TRUE' : false,
       });
     }
   });
 
   AppData.user  = user;
   AppData.rules = rules;
+
+  if (!Object.keys(user).length) {
+    console.warn('[티피덱] Setting 탭에서 UserData를 찾지 못했습니다.',
+      '컬럼명(UserDataName, UserDataTitle, UserData)을 확인하세요.');
+  }
 }
 
 /* ────────────────────────────────────────────────
