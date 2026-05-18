@@ -729,7 +729,17 @@ async function init(){
   }catch(e){
     app.innerHTML=`<div class="ph-page">
       <div class="ph-title">로드 실패</div>
-      <p class="ph-sub">${e.message}</p>
+      <p class="ph-sub" style="white-space:pre-line;text-align:left;max-width:480px;margin:0 auto;">${e.message}</p>
+      <details style="margin-top:20px;font-size:11px;color:var(--text-dim);max-width:480px;margin:16px auto 0;text-align:left;">
+        <summary style="cursor:pointer;letter-spacing:.5px;">체크리스트</summary>
+        <ul style="margin-top:8px;line-height:2;padding-left:16px;">
+          <li>js/config.js → scriptUrl 에 Apps Script 배포 URL 입력 여부</li>
+          <li>Apps Script → 배포 → 실행: <b>나</b> / 액세스: <b>모든 사용자</b> 설정 여부</li>
+          <li>Code.gs 수정 후 <b>새 버전으로 재배포</b> 여부 (기존 배포 업데이트 ❌ → 새 배포 ✅)</li>
+          <li>GitHub Pages 에서 실행 중인지 여부 (로컬 file:// 에서는 CORS 오류 발생)</li>
+          <li>스프레드시트에 Setting, FullIndex 탭이 존재하는지 여부</li>
+        </ul>
+      </details>
     </div>`;
   }
 }

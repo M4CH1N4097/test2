@@ -9,15 +9,33 @@
 async function fetchSheetValues(sheetName) {
   const { scriptUrl } = SHEET_CONFIG;
   if (!scriptUrl) throw new Error(
-    'scriptUrl이 설정되지 않았습니다.\njs/config.js 를 확인하세요.'
+    'scriptUrl이 비어 있습니다.\njs/config.js 에 Apps Script 배포 URL을 입력하세요.'
   );
 
-  const url  = `${scriptUrl}?sheet=${encodeURIComponent(sheetName)}`;
-  const res  = await fetch(url);
-  if (!res.ok) throw new Error(`"${sheetName}" 로드 실패: ${res.status}`);
+  const url = `${scriptUrl}?sheet=${encodeURIComponent(sheetName)}`;
+  let res;
+  try {
+    res = await fetch(url);
+  } catch (netErr) {
+    throw new Error(
+      `네트워크 오류: ${netErr.message}\n` +
+      '· scriptUrl이 올바른지 확인하세요.\n' +
+      '· 로컬(file://)에서는 CORS로 동작하지 않습니다. GitHub Pages에서 실행하세요.'
+    );
+  }
 
-  const data = await res.json();
-  if (data.error) throw new Error(data.error);
+  let data;
+  try {
+    data = await res.json();
+  } catch {
+    throw new Error(
+      `응답이 JSON이 아닙니다 (${res.status}).\n` +
+      '· Apps Script가 doGet 함수를 포함해 재배포됐는지 확인하세요.\n' +
+      '· 배포 시 "액세스: 모든 사용자"로 설정했는지 확인하세요.'
+    );
+  }
+
+  if (data.error) throw new Error(`"${sheetName}" 오류: ${data.error}`);
   return data.values || [];
 }
 
