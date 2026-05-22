@@ -1,5 +1,7 @@
 /* ════════════════════════════════════════════════
    data.js — 앱 데이터 모델 & 로딩
+   ※ Apps Script 의존성 제거 (비밀번호 제외)
+     ShortIntroduce 등 모든 데이터를 gviz로 직접 읽음
 ════════════════════════════════════════════════ */
 
 const AppData = {
@@ -9,11 +11,12 @@ const AppData = {
   pcs:        [],      // FullIndex 파싱 결과
   ruleCache:  {},      // 룰 탭 캐시 { tabName: [records] }
   logCache:   null,    // Log 탭 캐시
-  bioHtml:    null,    // ShortIntroduce 서식 HTML (비동기 로드)
+  bioHtml:    null,    // ShortIntroduce (Setting 탭에서 직접 읽은 값)
 };
 
 /* ────────────────────────────────────────────────
    초기 로드: Setting + FullIndex
+   ※ 모두 gviz로 직접 읽어옴 — Apps Script 미사용
 ──────────────────────────────────────────────── */
 async function loadAppData() {
   const [settingRows, indexRows] = await Promise.all([
@@ -24,61 +27,39 @@ async function loadAppData() {
   _parseFullIndex(indexRows);
   AppData.ready = true;
 
-  /* 서식 있는 소개글 비동기 로드 (scriptUrl 있을 때만) */
-  if (SHEET_CONFIG.scriptUrl) {
-    _loadBioHtml().catch(() => {});
-  }
-}
+  /* ShortIntroduce: Apps Script 없이 Setting 탭에서 바로 읽은 plain text 사용
+     (서식/링크가 필요하다면 Setting 탭 셀에 HTML 직접 입력 가능) */
+  const bioText = AppData.user['ShortIntroduce']?.value || '';
+  AppData.bioHtml = bioText;
 
-async function _loadBioHtml() {
-  const res  = await fetch(SHEET_CONFIG.scriptUrl, {
-    method: 'POST',
-    body:   JSON.stringify({ action: 'getRichText', fieldName: 'ShortIntroduce' }),
-  });
-  const data = await res.json();
-  if (!data.html) return;
-  AppData.bioHtml = data.html;
-  /* 이미 렌더링된 경우 즉시 업데이트 */
+  /* 이미 렌더링된 .bio 요소가 있으면 즉시 반영 */
   const el = document.querySelector('.bio');
-  if (el) el.innerHTML = data.html;
+  if (el && bioText) el.innerHTML = bioText;
 }
 
 /* ────────────────────────────────────────────────
    Setting 탭 파싱
 ──────────────────────────────────────────────── */
 function _parseSetting(rows) {
-  /* parseSheetRows 호출 전, 컬럼명 트리밍 보정 */
-  if (rows && rows[1]) {
-    rows[1] = rows[1].map(h => (h || '').toString().trim());
-  }
-  const records = parseSheetRows(rows);
+  /* 'UserDataName' 셀이 있는 행을 헤더로 자동 탐지 */
+  const records = parseSheetRows(rows, 'UserDataName');
 
   const user  = {};
   const rules = [];
 
   records.forEach(r => {
-    /* UserData 계열 — 대소문자 무관하게 키를 찾아 처리 */
-    const nameKey  = Object.keys(r).find(k => k.toLowerCase() === 'userdataname');
-    const titleKey = Object.keys(r).find(k => k.toLowerCase() === 'userdatatitle');
-    const valKey   = Object.keys(r).find(k => k.toLowerCase() === 'userdata');
-    const tabKey   = Object.keys(r).find(k => k.toLowerCase() === 'tabname');
-    const ruleKey  = Object.keys(r).find(k => k.toLowerCase() === 'rulename');
-    const onKey    = Object.keys(r).find(k => k.toLowerCase() === 'onoff');
-
-    const uName = nameKey ? r[nameKey].trim() : '';
-    if (uName) {
-      user[uName] = {
-        title: titleKey && r[titleKey] ? r[titleKey] : uName,
-        value: valKey   ? r[valKey]    : '',
+    if (r.UserDataName) {
+      user[r.UserDataName] = {
+        /* 제목이 있으면 UserDataTitle, 없으면 UserDataName 그대로 사용 */
+        title: r.UserDataTitle || r.UserDataName,
+        value: r.UserData      || '',
       };
     }
-
-    const tName = tabKey ? r[tabKey].trim() : '';
-    if (tName) {
+    if (r.TabName) {
       rules.push({
-        tabName:  tName,
-        ruleName: ruleKey && r[ruleKey] ? r[ruleKey] : tName,
-        onoff:    onKey ? r[onKey]?.toUpperCase() === 'TRUE' : false,
+        tabName:  r.TabName,
+        ruleName: r.RuleName || r.TabName,
+        onoff:    r.Onoff?.toUpperCase() === 'TRUE',
       });
     }
   });
@@ -87,8 +68,8 @@ function _parseSetting(rows) {
   AppData.rules = rules;
 
   if (!Object.keys(user).length) {
-    console.warn('[티피덱] Setting 탭에서 UserData를 찾지 못했습니다.',
-      '컬럼명(UserDataName, UserDataTitle, UserData)을 확인하세요.');
+    console.warn('[티피덱] Setting 탭에서 UserData를 찾지 못했습니다. 컬럼명을 확인하세요.',
+      { firstRow: rows[0], secondRow: rows[1] });
   }
 }
 
@@ -96,7 +77,8 @@ function _parseSetting(rows) {
    FullIndex 탭 파싱
 ──────────────────────────────────────────────── */
 function _parseFullIndex(rows) {
-  const records = parseSheetRows(rows);
+  /* 'CharaId' 셀이 있는 행을 헤더로 자동 탐지 */
+  const records = parseSheetRows(rows, 'CharaId');
 
   AppData.pcs = records
     .filter(r => r.ID && r.ID !== '0' && r.Hide?.toUpperCase() !== 'TRUE')
@@ -134,7 +116,8 @@ async function loadCharaDetail(pc) {
   // 룰 탭 캐시
   if (!AppData.ruleCache[pc.rule]) {
     const rows = await fetchSheetValues(pc.rule);
-    AppData.ruleCache[pc.rule] = parseSheetRows(rows);
+    /* 'TabGroup' 셀이 있는 행을 헤더로 자동 탐지 */
+    AppData.ruleCache[pc.rule] = parseSheetRows(rows, 'TabGroup');
   }
 
   const allRecords = AppData.ruleCache[pc.rule];
@@ -164,7 +147,7 @@ async function loadCharaDetail(pc) {
 async function loadLogs(rule, charaId) {
   if (!AppData.logCache) {
     const rows = await fetchSheetValues('Log');
-    AppData.logCache = parseSheetRows(rows);
+    AppData.logCache = parseSheetRows(rows, 'Rule');
   }
   return AppData.logCache.filter(
     r => r.Rule === rule && r.CharaId === charaId
@@ -252,7 +235,8 @@ function buildOwner() {
     avatar: get('ProfileImage') || null,
     /* MainRule: "룰A, 룰B" → 쉼표 분리 */
     tags:   get('MainRule').split(',').map(s => s.trim()).filter(Boolean),
-    bio:    get('ShortIntroduce'),
+    /* ShortIntroduce: Setting 탭에서 직접 읽은 값 (Apps Script 불필요) */
+    bio:    AppData.bioHtml || get('ShortIntroduce'),
     links: [
       /* UserDataTitle 값을 링크 표시명으로 사용 */
       { label: ttl('Introduce'), url: get('Introduce') },
